@@ -1,0 +1,286 @@
+/*==================================================
+ SIGEDIS
+ Login
+==================================================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:#EEF3F8;
+
+}
+
+/*=========================================
+LADO IZQUIERDO
+=========================================*/
+
+.login-left{
+
+    position:relative;
+
+    background:linear-gradient(135deg,#2563EB,#1D4ED8,#0F172A);
+
+    color:white;
+
+    justify-content:center;
+
+    align-items:center;
+
+    overflow:hidden;
+
+}
+
+.login-left::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:600px;
+
+    height:600px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+
+    top:-180px;
+
+    left:-180px;
+
+}
+
+.login-left::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:450px;
+
+    height:450px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.05);
+
+    bottom:-120px;
+
+    right:-120px;
+
+}
+
+.overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(15,23,42,.25);
+
+}
+
+.content{
+
+    position:relative;
+
+    max-width:600px;
+
+    padding:60px;
+
+    z-index:10;
+
+}
+
+.content h1{
+
+    font-size:60px;
+
+    font-weight:700;
+
+    margin-bottom:20px;
+
+}
+
+.content h3{
+
+    font-weight:600;
+
+    margin-bottom:25px;
+
+}
+
+.content p{
+
+    font-size:18px;
+
+    line-height:1.8;
+
+}
+
+/*=========================================
+LADO DERECHO
+=========================================*/
+
+.login-right{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#F8FAFC;
+
+}
+
+.login-card{
+
+    width:100%;
+
+    max-width:460px;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:45px;
+
+    box-shadow:0 20px 45px rgba(0,0,0,.08);
+
+    animation:fade .6s ease;
+
+}
+
+.login-icon{
+
+    font-size:70px;
+
+    color:#2563EB;
+
+    margin-bottom:20px;
+
+}
+
+.login-card h2{
+
+    font-weight:700;
+
+}
+
+.login-card p{
+
+    color:#64748B;
+
+}
+
+.form-control{
+
+    height:55px;
+
+    border-radius:12px;
+
+}
+
+.form-control:focus{
+
+    border-color:#2563EB;
+
+    box-shadow:0 0 0 .25rem rgba(37,99,235,.15);
+
+}
+
+.btn-primary{
+
+    background:#2563EB;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.btn-primary:hover{
+
+    background:#1D4ED8;
+
+    transform:translateY(-2px);
+
+}
+
+a{
+
+    text-decoration:none;
+
+}
+
+a:hover{
+
+    text-decoration:underline;
+
+}
+
+/*=========================================
+ANIMACIONES
+=========================================*/
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(30px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/*=========================================
+RESPONSIVE
+=========================================*/
+
+@media(max-width:991px){
+
+    .login-card{
+
+        margin:25px;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .login-card{
+
+        padding:30px 25px;
+
+    }
+
+    .login-icon{
+
+        font-size:55px;
+
+    }
+
+}

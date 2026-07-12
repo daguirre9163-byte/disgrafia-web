@@ -1,0 +1,199 @@
+<div class="fade-in">
+
+    <!-- ENCABEZADO -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h2 class="dashboard-title">
+
+                ¡Bienvenido!
+
+            </h2>
+
+            <p class="dashboard-subtitle">
+
+                Sistema Integral para la Gestión de Estudiantes con Disgrafía
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <button class="btn btn-primary">
+
+                <i class="bi bi-plus-circle"></i>
+
+                Nuevo Estudiante
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- TARJETAS -->
+
+    <div class="row g-4 mt-2">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-card bg-primary">
+
+                <div>
+
+                    <small>Estudiantes</small>
+
+                    <h2 id="totalEstudiantes">0</h2>
+
+                </div>
+
+                <i class="bi bi-mortarboard-fill"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-card bg-success">
+
+                <div>
+
+                    <small>Cursos</small>
+
+                    <h2 id="totalCursos">0</h2>
+
+                </div>
+
+                <i class="bi bi-building"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-card bg-warning">
+
+                <div>
+
+                    <small>Evaluaciones</small>
+
+                    <h2 id="totalEvaluaciones">0</h2>
+
+                </div>
+
+                <i class="bi bi-clipboard-check-fill"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-card bg-danger">
+
+                <div>
+
+                    <small>Guías</small>
+
+                    <h2 id="totalGuias">0</h2>
+
+                </div>
+
+                <i class="bi bi-journal-bookmark-fill"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SEGUNDA FILA -->
+
+    <div class="row mt-4 g-4">
+
+        <!-- ACTIVIDAD -->
+
+        <div class="col-lg-8">
+
+            <div class="panel">
+
+                <h4>
+
+                    <i class="bi bi-clock-history"></i>
+
+                    Actividad reciente
+
+                </h4>
+
+                <hr>
+
+                <div id="actividadReciente">
+
+                    <div class="activity-item">
+
+                        <i class="bi bi-check-circle-fill text-success"></i>
+
+                        Bienvenido a SIGEDIS.
+
+                    </div>
+
+                    <div class="activity-item">
+
+                        <i class="bi bi-check-circle-fill text-success"></i>
+
+                        Firebase conectado correctamente.
+
+                    </div>
+
+                    <div class="activity-item">
+
+                        <i class="bi bi-info-circle-fill text-primary"></i>
+
+                        El sistema está listo para comenzar.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CALENDARIO -->
+
+        <div class="col-lg-4">
+
+            <div class="panel">
+
+                <h4>
+
+                    <i class="bi bi-calendar-event"></i>
+
+                    Fecha
+
+                </h4>
+
+                <hr>
+
+                <div class="calendar-box">
+
+                    <h1 id="diaActual"></h1>
+
+                    <h5 id="mesActual"></h5>
+
+                    <p id="anioActual"></p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

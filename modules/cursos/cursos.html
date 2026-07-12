@@ -1,0 +1,357 @@
+<div class="fade-in">
+
+    <!-- ENCABEZADO -->
+
+    <div class="module-header">
+
+        <div>
+
+            <h2 class="module-title">
+
+                Gestión de Cursos
+
+            </h2>
+
+            <p class="module-subtitle">
+
+                Administra todos los cursos registrados en la plataforma.
+
+            </p>
+
+        </div>
+
+        <button
+            class="btn btn-primary"
+            id="btnNuevoCurso">
+
+            <i class="bi bi-plus-circle-fill"></i>
+
+            Nuevo Curso
+
+        </button>
+
+    </div>
+
+    <!-- DASHBOARD -->
+
+    <div class="row g-4 mt-2">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="info-card">
+
+                <div>
+
+                    <small>Total Cursos</small>
+
+                    <h3 id="totalCursos">
+
+                        0
+
+                    </h3>
+
+                </div>
+
+                <i class="bi bi-book-fill"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="info-card success">
+
+                <div>
+
+                    <small>Estudiantes</small>
+
+                    <h3 id="totalEstudiantes">
+
+                        0
+
+                    </h3>
+
+                </div>
+
+                <i class="bi bi-mortarboard-fill"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="info-card warning">
+
+                <div>
+
+                    <small>Período</small>
+
+                    <h3>
+
+                        2026-2027
+
+                    </h3>
+
+                </div>
+
+                <i class="bi bi-calendar-event-fill"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="info-card danger">
+
+                <div>
+
+                    <small>Estado</small>
+
+                    <h3>
+
+                        Activo
+
+                    </h3>
+
+                </div>
+
+                <i class="bi bi-check-circle-fill"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- BUSCADOR -->
+
+    <div class="search-container mt-4">
+
+        <div class="input-group">
+
+            <span class="input-group-text">
+
+                <i class="bi bi-search"></i>
+
+            </span>
+
+            <input
+                id="buscarCurso"
+                type="text"
+                class="form-control"
+                placeholder="Buscar curso...">
+
+        </div>
+
+    </div>
+
+    <!-- CONTENEDOR DE TARJETAS -->
+
+<div id="contenedorCursos" class="row g-4 mt-3">
+
+    <div class="col-12">
+
+        <div id="estadoVacio" class="empty-state">
+
+            <i class="bi bi-book"></i>
+
+            <h4>Aún no tienes cursos registrados</h4>
+
+            <p>
+
+                Crea tu primer curso para comenzar a gestionar
+                estudiantes, guías metodológicas y evaluaciones.
+
+            </p>
+
+            <button
+                class="btn btn-primary"
+                id="btnCrearPrimerCurso">
+
+                <i class="bi bi-plus-circle-fill"></i>
+
+                Crear mi primer curso
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- ========================================================= -->
+
+<!-- MODAL -->
+
+<div
+    class="modal fade"
+    id="modalCurso"
+    tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5
+                    class="modal-title">
+
+                    Curso
+
+                </h5>
+
+                <button
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="formCurso">
+
+                    <input
+                        type="hidden"
+                        id="cursoId">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+
+                                Nombre
+
+                            </label>
+
+                            <input
+                                id="nombreCurso"
+                                class="form-control"
+                                required>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+
+                                Paralelo
+
+                            </label>
+
+                            <input
+                                id="paraleloCurso"
+                                class="form-control"
+                                required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+
+                                Nivel
+
+                            </label>
+
+                            <select
+                                id="nivelCurso"
+                                class="form-select">
+
+                                <option>EGB Inicial</option>
+
+                                <option>EGB Elemental</option>
+
+                                <option>EGB Media</option>
+
+                                <option>EGB Superior</option>
+
+                                <option>Bachillerato</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+
+                                Jornada
+
+                            </label>
+
+                            <select
+                                id="jornadaCurso"
+                                class="form-select">
+
+                                <option>Matutina</option>
+
+                                <option>Vespertina</option>
+
+                                <option>Nocturna</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>
+
+                            Descripción
+
+                        </label>
+
+                        <textarea
+                            id="descripcionCurso"
+                            rows="4"
+                            class="form-control">
+
+                        </textarea>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    id="btnGuardarCurso">
+
+                    Guardar Curso
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
