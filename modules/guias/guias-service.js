@@ -11,9 +11,9 @@ import {
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
 
-const COLECCION = 'recursos';
+const COLECCION = 'guias_metodologicas';
 
-export async function obtenerRecursosServicio() {
+export async function obtenerGuiasServicio() {
   try {
     const snapshot = await getDocs(collection(db, COLECCION));
     return snapshot.docs.map(doc => ({
@@ -21,12 +21,12 @@ export async function obtenerRecursosServicio() {
       ...doc.data()
     }));
   } catch (error) {
-    console.error('Error al obtener recursos:', error);
+    console.error('Error al obtener guías:', error);
     return [];
   }
 }
 
-export async function crearRecursoServicio(datos) {
+export async function crearGuiaServicio(datos) {
   try {
     const usuario = auth.currentUser;
     if (!usuario) throw new Error('Usuario no autenticado');
@@ -40,12 +40,12 @@ export async function crearRecursoServicio(datos) {
 
     return docRef.id;
   } catch (error) {
-    console.error('Error al crear recurso:', error);
+    console.error('Error al crear guía:', error);
     throw error;
   }
 }
 
-export async function actualizarRecursoServicio(id, datos) {
+export async function actualizarGuiaServicio(id, datos) {
   try {
     const docRef = doc(db, COLECCION, id);
     await updateDoc(docRef, {
@@ -53,16 +53,16 @@ export async function actualizarRecursoServicio(id, datos) {
       updatedAt: serverTimestamp()
     });
   } catch (error) {
-    console.error('Error al actualizar recurso:', error);
+    console.error('Error al actualizar guía:', error);
     throw error;
   }
 }
 
-export async function eliminarRecursoServicio(id) {
+export async function eliminarGuiaServicio(id) {
   try {
     await deleteDoc(doc(db, COLECCION, id));
   } catch (error) {
-    console.error('Error al eliminar recurso:', error);
+    console.error('Error al eliminar guía:', error);
     throw error;
   }
 }
