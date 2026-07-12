@@ -4,6 +4,7 @@ export const COLLECTIONS = {
     CURSOS: "cursos",
     EVALUACIONES: "evaluaciones",
     GUIAS: "guias",
+    PROGRESO: "progreso",
     ACTIVIDADES: "actividades",
     RECURSOS: "recursos",
     INSTITUCIONES: "instituciones",

@@ -1,0 +1,9 @@
+/* Estilos específicos del sidebar */
+.sidebar-container {
+    min-height: 100%;
+}
+
+.sidebar-menu .menu-link[aria-current="page"] {
+    background: #2563EB;
+    color: #fff;
+}

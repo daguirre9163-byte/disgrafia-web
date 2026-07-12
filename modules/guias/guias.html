@@ -1,0 +1,51 @@
+<div class="fade-in">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Guías metodológicas</h2>
+      <p class="module-subtitle">Repositorio de guías por tipo de disgrafía y nivel.</p>
+    </div>
+    <button id="btnNuevaGuia" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nueva Guía</button>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">Filtrar por tipo</label>
+      <select id="filtroTipo" class="form-select">
+        <option value="">Todos</option>
+        <option value="motora">Motora</option>
+        <option value="espacial">Espacial</option>
+        <option value="mixta">Mixta</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Filtrar por nivel</label>
+      <select id="filtroNivel" class="form-select">
+        <option value="">Todos</option>
+        <option>Inicial</option><option>Elemental</option><option>Media</option><option>Superior</option><option>Bachillerato</option><option>Especial</option>
+      </select>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+      <button id="btnExportarGuias" class="btn btn-outline-secondary w-100"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
+    </div>
+  </div>
+
+  <div id="contenedorGuias" class="row g-3 mt-2"></div>
+</div>
+
+<div class="modal fade" id="modalGuia" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Guía</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <form id="formGuia">
+          <input type="hidden" id="guiaId">
+          <div class="mb-3"><label class="form-label">Título</label><input id="tituloGuia" class="form-control" required></div>
+          <div class="mb-3"><label class="form-label">Tipo de disgrafía</label><select id="tipoGuia" class="form-select"><option value="motora">Motora</option><option value="espacial">Espacial</option><option value="mixta">Mixta</option></select></div>
+          <div class="mb-3"><label class="form-label">Nivel</label><select id="nivelGuia" class="form-select"><option>Inicial</option><option>Elemental</option><option>Media</option><option>Superior</option><option>Bachillerato</option><option>Especial</option></select></div>
+          <div class="mb-3"><label class="form-label">Descripción</label><textarea id="descripcionGuia" rows="3" class="form-control"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button id="btnGuardarGuia" type="button" class="btn btn-primary">Guardar</button></div>
+    </div>
+  </div>
+</div>

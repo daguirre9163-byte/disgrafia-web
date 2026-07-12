@@ -1,0 +1,28 @@
+<div class="fade-in">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Seguimiento</h2>
+      <p class="module-subtitle">Progreso y evolución por estudiante.</p>
+    </div>
+    <button id="btnNuevoSeguimiento" class="btn btn-primary"><i class="bi bi-graph-up"></i> Registrar avance</button>
+  </div>
+
+  <div id="contenedorSeguimiento" class="module-grid"></div>
+</div>
+
+<div class="modal fade" id="modalSeguimiento" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Registrar seguimiento</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <form id="formSeguimiento">
+          <div class="mb-3"><label class="form-label">Estudiante</label><input id="seguimientoEstudiante" class="form-control" required></div>
+          <div class="mb-3"><label class="form-label">Actividad</label><input id="seguimientoActividad" class="form-control" required></div>
+          <div class="mb-3"><label class="form-label">Progreso (%)</label><input id="seguimientoProgreso" type="number" min="0" max="100" class="form-control" required></div>
+          <div class="mb-3"><label class="form-label">Observaciones</label><textarea id="seguimientoObservacion" rows="3" class="form-control"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button id="btnGuardarSeguimiento" type="button" class="btn btn-primary">Guardar</button></div>
+    </div>
+  </div>
+</div>

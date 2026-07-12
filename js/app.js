@@ -5,6 +5,8 @@
 
 import { loadModule } from "./router.js";
 import { cerrarSesion } from "../firebase/guards.js";
+import { inicializarSidebar } from "../components/sidebar/sidebar.js";
+import { inicializarNavbar } from "../components/navbar/navbar.js";
 
 //======================================================
 
@@ -20,8 +22,12 @@ async function iniciarAplicacion() {
 
         await cargarNavbar();
 
+        inicializarSidebar();
+        inicializarNavbar();
+
         activarMenu();
 
+        restaurarTema();
         await loadModule("dashboard");
 
         console.log("✅ SIGEDIS iniciado correctamente");
@@ -109,6 +115,7 @@ document.addEventListener("click", (e) => {
     if (e.target.closest("#btnDarkMode")) {
 
         document.body.classList.toggle("dark-mode");
+        localStorage.setItem("sigedis.theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
 
     }
 
@@ -127,3 +134,10 @@ document.addEventListener("click", (e) => {
     }
 
 });
+
+function restaurarTema() {
+    const tema = localStorage.getItem("sigedis.theme");
+    if (tema === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+}
