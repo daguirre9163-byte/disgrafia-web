@@ -6,6 +6,7 @@ import {
 
 import { obtenerEstudiantesServicio } from "../estudiantes/estudiantes-service.js";
 import { registrarNotificacion } from "../../js/notificaciones.js";
+import { sanitizarTexto } from "../../js/validaciones.js";
 
 let evaluaciones = [];
 let pasoActual = 1;
@@ -40,11 +41,11 @@ function renderTabla() {
     const nota = Number(item.calificacion || 0);
     return `
       <tr>
-        <td>${item.estudianteNombre || "-"}</td>
-        <td>${item.tipo || "General"}</td>
+        <td>${sanitizarTexto(item.estudianteNombre || "-")}</td>
+        <td>${sanitizarTexto(item.tipo || "General")}</td>
         <td>${nota}</td>
         <td><span class="badge ${nota < 5 ? "bg-danger" : "bg-success"}">${feedback(nota)}</span></td>
-        <td>${item.observaciones || "-"}</td>
+        <td>${sanitizarTexto(item.observaciones || "-")}</td>
         <td>${item.fecha?.seconds ? new Date(item.fecha.seconds * 1000).toLocaleDateString("es-EC") : "-"}</td>
       </tr>
     `;
@@ -100,11 +101,11 @@ function completarResumen() {
   const observaciones = document.getElementById("observacionesEvaluacion").value.trim();
 
   document.getElementById("resumenEvaluacion").innerHTML = `
-    <strong>Estudiante:</strong> ${estudianteNombre}<br>
-    <strong>Tipo:</strong> ${tipo}<br>
+    <strong>Estudiante:</strong> ${sanitizarTexto(estudianteNombre)}<br>
+    <strong>Tipo:</strong> ${sanitizarTexto(tipo)}<br>
     <strong>Calificación:</strong> ${calificacion}<br>
     <strong>Feedback:</strong> ${feedback(calificacion)}<br>
-    <strong>Observaciones:</strong> ${observaciones || "-"}
+    <strong>Observaciones:</strong> ${sanitizarTexto(observaciones || "-")}
   `;
 }
 

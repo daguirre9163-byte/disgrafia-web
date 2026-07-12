@@ -4,6 +4,7 @@ import {
   marcarNotificacionLeida,
   limpiarNotificacionesAntiguas
 } from "../firebase/firestore.js";
+import { sanitizarTexto } from "./validaciones.js";
 
 const MAX_DROPDOWN = 10;
 const LOCAL_KEY = "sigedis.notificaciones";
@@ -45,10 +46,11 @@ export function mostrarToast(mensaje, tipo = "info") {
   toast.ariaLive = "assertive";
   toast.ariaAtomic = "true";
 
+  const mensajeSeguro = sanitizarTexto(mensaje);
   toast.innerHTML = `
     <div class="d-flex">
       <div class="toast-body">
-        <i class="bi ${icono(tipo)} me-2" aria-hidden="true"></i>${mensaje}
+        <i class="bi ${icono(tipo)} me-2" aria-hidden="true"></i>${mensajeSeguro}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
     </div>
@@ -86,14 +88,26 @@ function renderCentro() {
   contador.classList.toggle("d-none", pendientes === 0);
 
   const ultimas = notificaciones.slice(0, MAX_DROPDOWN);
-  lista.innerHTML = ultimas.map((item) => `
-    <li>
-      <button type="button" class="dropdown-item notification-item ${item.leida ? "" : "fw-semibold"}" data-id="${item.id}">
-        <div class="small text-muted">${fechaLegible(item.fechaCreacion)}</div>
-        <div>${item.mensaje}</div>
-      </button>
-    </li>
-  `).join("");
+  lista.innerHTML = "";
+  ultimas.forEach((item) => {
+    const li = document.createElement("li");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `dropdown-item notification-item ${item.leida ? "" : "fw-semibold"}`.trim();
+    button.dataset.id = String(item.id || "");
+
+    const fecha = document.createElement("div");
+    fecha.className = "small text-muted";
+    fecha.textContent = fechaLegible(item.fechaCreacion);
+
+    const mensaje = document.createElement("div");
+    mensaje.textContent = sanitizarTexto(item.mensaje || "");
+
+    button.appendChild(fecha);
+    button.appendChild(mensaje);
+    li.appendChild(button);
+    lista.appendChild(li);
+  });
 
   if (!ultimas.length && vacio) {
     vacio.classList.remove("d-none");
