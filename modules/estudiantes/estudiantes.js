@@ -5,10 +5,12 @@ import {
   eliminarEstudianteServicio
 } from "./estudiantes-service.js";
 
+import { obtenerCursosServicio } from "../cursos/cursos-service.js";
 import { sanitizarTexto } from "../../js/validaciones.js";
 import { registrarNotificacion } from "../../js/notificaciones.js";
 
 let estudiantes = [];
+let cursos = [];
 let estudianteEditandoId = null;
 let modalEstudiante = null;
 let vistaTarjeta = false;
@@ -26,7 +28,7 @@ function mostrarMensaje(mensaje, tipo = "success") {
   if (!tabla) return;
 
   const alerta = document.createElement("tr");
-  alerta.innerHTML = `<td colspan="5" class="text-center text-${tipo === "danger" ? "danger" : "success"}">${sanitizarTexto(mensaje)}</td>`;
+  alerta.innerHTML = `<td colspan="6" class="text-center text-${tipo === "danger" ? "danger" : "success"}">${sanitizarTexto(mensaje)}</td>`;
   tabla.prepend(alerta);
 
   setTimeout(() => alerta.remove(), 2500);
@@ -36,14 +38,16 @@ function filtrarLista() {
   const texto = document.getElementById("filtroEstudiante")?.value?.toLowerCase() || "";
   const nivel = document.getElementById("filtroNivel")?.value?.toLowerCase() || "";
   const disgrafia = document.getElementById("filtroDisgrafia")?.value?.toLowerCase() || "";
+  const curso = document.getElementById("filtroCurso")?.value?.toLowerCase() || "";
 
   return estudiantes.filter((estudiante) => {
     const nombreCompleto = `${estudiante.nombre || ""} ${estudiante.apellido || ""}`.toLowerCase();
     const coincideNombre = nombreCompleto.includes(texto);
     const coincideNivel = !nivel || String(estudiante.nivel || "").toLowerCase().includes(nivel);
     const coincideDisgrafia = !disgrafia || String(estudiante.disgrafia || "").toLowerCase().includes(disgrafia);
+    const coincideCurso = !curso || String(estudiante.cursoId || "").toLowerCase().includes(curso);
 
-    return coincideNombre && coincideNivel && coincideDisgrafia;
+    return coincideNombre && coincideNivel && coincideDisgrafia && coincideCurso;
   });
 }
 
@@ -53,31 +57,38 @@ function renderizarTabla() {
 
   const lista = filtrarLista();
   const cards = document.getElementById("cardsEstudiantes");
+  
   if (cards) {
-    cards.innerHTML = lista.map((estudiante) => `
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-          <div class="card-body">
-            <h6>${sanitizarTexto(`${estudiante.nombre || ""} ${estudiante.apellido || ""}`.trim())}</h6>
-            <p class="mb-1"><strong>Nivel:</strong> ${sanitizarTexto(estudiante.nivel || "-")}</p>
-            <p class="mb-0"><strong>Disgrafía:</strong> ${sanitizarTexto(estudiante.disgrafia || "-")}</p>
+    cards.innerHTML = lista.map((estudiante) => {
+      const curso = cursos.find(c => c.id === estudiante.cursoId);
+      return `
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h6>${sanitizarTexto(`${estudiante.nombre || ""} ${estudiante.apellido || ""}`.trim())}</h6>
+              <p class="mb-1"><strong>Nivel:</strong> ${sanitizarTexto(estudiante.nivel || "-")}</p>
+              <p class="mb-1"><strong>Disgrafía:</strong> ${sanitizarTexto(estudiante.disgrafia || "-")}</p>
+              <p class="mb-0"><strong>Curso:</strong> ${sanitizarTexto(curso?.nombre || "No asignado")}</p>
+            </div>
           </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
   if (!lista.length) {
-    tabla.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay estudiantes registrados</td></tr>';
+    tabla.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay estudiantes registrados</td></tr>';
     return;
   }
 
   tabla.innerHTML = lista.map((estudiante) => {
+    const curso = cursos.find(c => c.id === estudiante.cursoId);
     return `
       <tr>
         <td><strong>${sanitizarTexto(`${estudiante.nombre || ""} ${estudiante.apellido || ""}`.trim())}</strong></td>
         <td>${sanitizarTexto(estudiante.nivel || "-")}</td>
         <td><span class="badge bg-info">${sanitizarTexto(estudiante.disgrafia || "-")}</span></td>
+        <td><span class="badge bg-secondary">${sanitizarTexto(curso?.nombre || "No asignado")}</span></td>
         <td>${sanitizarTexto(String(estudiante.totalEvaluaciones || 0))}</td>
         <td>
           <button class="btn btn-sm btn-outline-primary" onclick="editarEstudiante('${estudiante.id}')">
@@ -90,6 +101,21 @@ function renderizarTabla() {
       </tr>
     `;
   }).join("");
+}
+
+async function cargarCursos() {
+  cursos = await obtenerCursosServicio();
+  const selectCurso = document.getElementById("cursoEstudiante");
+  if (selectCurso) {
+    selectCurso.innerHTML = `<option value="">-- Seleccionar curso --</option>` + 
+      cursos.map(c => `<option value="${c.id}">${sanitizarTexto(c.nombre)}</option>`).join("");
+  }
+  
+  const filtroCurso = document.getElementById("filtroCurso");
+  if (filtroCurso) {
+    filtroCurso.innerHTML = `<option value="">Todos los cursos</option>` + 
+      cursos.map(c => `<option value="${c.id}">${sanitizarTexto(c.nombre)}</option>`).join("");
+  }
 }
 
 async function cargarEstudiantes() {
@@ -110,9 +136,15 @@ async function guardarEstudiante() {
   const nombre = sanitizarTexto(document.getElementById("nombreEst")?.value);
   const nivel = sanitizarTexto(document.getElementById("nivelEst")?.value);
   const disgrafia = sanitizarTexto(document.getElementById("disgrafia")?.value);
+  const cursoId = document.getElementById("cursoEstudiante")?.value;
 
   if (!nombre || !nivel || !disgrafia) {
     mostrarMensaje("Complete los campos obligatorios.", "danger");
+    return;
+  }
+
+  if (!cursoId) {
+    mostrarMensaje("Seleccione un curso.", "danger");
     return;
   }
 
@@ -120,6 +152,7 @@ async function guardarEstudiante() {
     nombre,
     nivel,
     disgrafia,
+    cursoId,
     tiposDisgrafia: [disgrafia]
   };
 
@@ -157,13 +190,18 @@ async function editarEstudiante(id) {
   document.getElementById("nombreEst").value = estudiante.nombre || "";
   document.getElementById("nivelEst").value = estudiante.nivel || "Educación Inicial";
   document.getElementById("disgrafia").value = estudiante.disgrafia || "Motriz";
+  document.getElementById("cursoEstudiante").value = estudiante.cursoId || "";
   getModal().show();
 }
 
 async function initEstudiantes() {
+  await cargarCursos();
+  
   document.getElementById("filtroEstudiante")?.addEventListener("input", renderizarTabla);
   document.getElementById("filtroNivel")?.addEventListener("change", renderizarTabla);
   document.getElementById("filtroDisgrafia")?.addEventListener("change", renderizarTabla);
+  document.getElementById("filtroCurso")?.addEventListener("change", renderizarTabla);
+  
   document.getElementById("btnVistaEstudiantes")?.addEventListener("click", () => {
     vistaTarjeta = !vistaTarjeta;
     document.querySelector(".table-responsive")?.classList.toggle("d-none", vistaTarjeta);
@@ -186,6 +224,7 @@ async function initEstudiantes() {
             nombre: sanitizarTexto(item.nombre),
             nivel: sanitizarTexto(item.nivel || "Educación Inicial"),
             disgrafia: sanitizarTexto(item.disgrafia || "Motriz"),
+            cursoId: item.cursoId || "",
             tiposDisgrafia: [sanitizarTexto(item.disgrafia || "Motriz")]
           });
         }
@@ -195,6 +234,7 @@ async function initEstudiantes() {
       }
     });
   });
+  
   await cargarEstudiantes();
 }
 
