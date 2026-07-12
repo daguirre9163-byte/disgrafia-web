@@ -1,5 +1,6 @@
 import { obtenerEstudiantesServicio } from "../estudiantes/estudiantes-service.js";
 import { obtenerEvaluacionesServicio } from "../evaluacion/evaluacion-service.js";
+import { obtenerEventosLocales } from "../../js/analytics.js";
 
 let estudiantes = [];
 
@@ -72,6 +73,32 @@ async function cargarSeguimiento() {
   }
 
   dibujarGrafico(evaluaciones);
+  renderAnalytics();
+}
+
+function renderAnalytics() {
+  const contenedor = document.getElementById("infoEstudiante");
+  if (!contenedor) return;
+
+  const eventos = obtenerEventosLocales();
+  const clicks = eventos.filter((item) => item.tipo === "click").length;
+  const tiempos = eventos.filter((item) => item.tipo === "tiempo_pagina");
+  const totalSegundos = tiempos.reduce((acc, item) => acc + Number(item.metadata?.segundos || 0), 0);
+
+  const bloque = document.createElement("div");
+  bloque.className = "card mb-3 border-0 shadow-sm";
+  bloque.innerHTML = `
+    <div class="card-body">
+      <h6 class="mb-2">Analytics de uso</h6>
+      <p class="mb-1"><strong>Clicks en módulos:</strong> ${clicks}</p>
+      <p class="mb-0"><strong>Tiempo registrado:</strong> ${Math.round(totalSegundos / 60)} min</p>
+    </div>
+  `;
+
+  const previo = document.getElementById("analyticsSeguimiento");
+  if (previo) previo.remove();
+  bloque.id = "analyticsSeguimiento";
+  contenedor.appendChild(bloque);
 }
 
 function exportarSeguimientoPDF() {
@@ -97,7 +124,7 @@ function exportarSeguimientoPDF() {
   window.print();
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initSeguimiento() {
   estudiantes = await obtenerEstudiantesServicio();
   const select = document.getElementById("selectEstudiante");
 
@@ -109,6 +136,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   document.getElementById("btnExportarSeguimiento")?.addEventListener("click", exportarSeguimientoPDF);
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initSeguimiento);
+} else {
+  initSeguimiento();
+}
 
 window.cargarSeguimiento = cargarSeguimiento;

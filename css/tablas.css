@@ -1,0 +1,22 @@
+.table-advanced thead th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.table-advanced thead th.sort-asc::after,
+.table-advanced thead th.sort-desc::after {
+  margin-left: 0.4rem;
+  font-size: 0.75rem;
+}
+
+.table-advanced thead th.sort-asc::after {
+  content: "▲";
+}
+
+.table-advanced thead th.sort-desc::after {
+  content: "▼";
+}
+
+.table-scroll-x {
+  overflow-x: auto;
+}

@@ -6,10 +6,12 @@ import {
 } from "./estudiantes-service.js";
 
 import { sanitizarTexto } from "../../js/validaciones.js";
+import { registrarNotificacion } from "../../js/notificaciones.js";
 
 let estudiantes = [];
 let estudianteEditandoId = null;
 let modalEstudiante = null;
+let vistaTarjeta = false;
 
 function getModal() {
   if (!modalEstudiante) {
@@ -33,13 +35,15 @@ function mostrarMensaje(mensaje, tipo = "success") {
 function filtrarLista() {
   const texto = document.getElementById("filtroEstudiante")?.value?.toLowerCase() || "";
   const nivel = document.getElementById("filtroNivel")?.value?.toLowerCase() || "";
+  const disgrafia = document.getElementById("filtroDisgrafia")?.value?.toLowerCase() || "";
 
   return estudiantes.filter((estudiante) => {
     const nombreCompleto = `${estudiante.nombre || ""} ${estudiante.apellido || ""}`.toLowerCase();
     const coincideNombre = nombreCompleto.includes(texto);
     const coincideNivel = !nivel || String(estudiante.nivel || "").toLowerCase().includes(nivel);
+    const coincideDisgrafia = !disgrafia || String(estudiante.disgrafia || "").toLowerCase().includes(disgrafia);
 
-    return coincideNombre && coincideNivel;
+    return coincideNombre && coincideNivel && coincideDisgrafia;
   });
 }
 
@@ -48,6 +52,20 @@ function renderizarTabla() {
   if (!tabla) return;
 
   const lista = filtrarLista();
+  const cards = document.getElementById("cardsEstudiantes");
+  if (cards) {
+    cards.innerHTML = lista.map((estudiante) => `
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h6>${sanitizarTexto(`${estudiante.nombre || ""} ${estudiante.apellido || ""}`.trim())}</h6>
+            <p class="mb-1"><strong>Nivel:</strong> ${sanitizarTexto(estudiante.nivel || "-")}</p>
+            <p class="mb-0"><strong>Disgrafía:</strong> ${sanitizarTexto(estudiante.disgrafia || "-")}</p>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
 
   if (!lista.length) {
     tabla.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay estudiantes registrados</td></tr>';
@@ -108,9 +126,11 @@ async function guardarEstudiante() {
   if (estudianteEditandoId) {
     await actualizarEstudianteServicio(estudianteEditandoId, payload);
     mostrarMensaje("Estudiante actualizado.");
+    await registrarNotificacion({ mensaje: "Estudiante actualizado", tipo: "info" });
   } else {
     await crearEstudianteServicio(payload);
     mostrarMensaje("Estudiante creado.");
+    await registrarNotificacion({ mensaje: "Estudiante agregado correctamente", tipo: "success" });
   }
 
   limpiarFormulario();
@@ -125,6 +145,7 @@ async function eliminarEstudiante(id) {
 
   await eliminarEstudianteServicio(id);
   mostrarMensaje("Estudiante eliminado.");
+  await registrarNotificacion({ mensaje: "Estudiante eliminado", tipo: "warning" });
   await cargarEstudiantes();
 }
 
@@ -139,11 +160,49 @@ async function editarEstudiante(id) {
   getModal().show();
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initEstudiantes() {
   document.getElementById("filtroEstudiante")?.addEventListener("input", renderizarTabla);
   document.getElementById("filtroNivel")?.addEventListener("change", renderizarTabla);
+  document.getElementById("filtroDisgrafia")?.addEventListener("change", renderizarTabla);
+  document.getElementById("btnVistaEstudiantes")?.addEventListener("click", () => {
+    vistaTarjeta = !vistaTarjeta;
+    document.querySelector(".table-responsive")?.classList.toggle("d-none", vistaTarjeta);
+    document.getElementById("cardsEstudiantes")?.classList.toggle("d-none", !vistaTarjeta);
+    document.getElementById("btnVistaEstudiantes").innerHTML = vistaTarjeta
+      ? '<i class="bi bi-table"></i> Vista tabla'
+      : '<i class="bi bi-grid"></i> Vista tarjeta';
+  });
+
+  document.getElementById("btnImportarCSV")?.addEventListener("click", async () => {
+    const archivo = document.getElementById("csvEstudiantes")?.files?.[0];
+    if (!archivo || !window.Papa) return;
+
+    window.Papa.parse(archivo, {
+      header: true,
+      complete: async ({ data }) => {
+        for (const item of data) {
+          if (!item.nombre) continue;
+          await crearEstudianteServicio({
+            nombre: sanitizarTexto(item.nombre),
+            nivel: sanitizarTexto(item.nivel || "Educación Inicial"),
+            disgrafia: sanitizarTexto(item.disgrafia || "Motriz"),
+            tiposDisgrafia: [sanitizarTexto(item.disgrafia || "Motriz")]
+          });
+        }
+
+        await registrarNotificacion({ mensaje: "Importación masiva completada", tipo: "success" });
+        await cargarEstudiantes();
+      }
+    });
+  });
   await cargarEstudiantes();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initEstudiantes);
+} else {
+  initEstudiantes();
+}
 
 window.guardarEstudiante = guardarEstudiante;
 window.eliminarEstudiante = eliminarEstudiante;

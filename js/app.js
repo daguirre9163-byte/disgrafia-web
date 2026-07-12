@@ -3,6 +3,8 @@ import { inicializarSidebar } from "../components/sidebar/sidebar.js";
 import { inicializarNavbar } from "../components/navbar/navbar.js";
 import { migrarLocalStorageAFirestore } from "./firestore-service.js";
 import { crearEstudiante, crearEvaluacion, crearActividad } from "../firebase/firestore.js";
+import { inicializarNotificaciones, registrarNotificacion } from "./notificaciones.js";
+import { inicializarAnalytics, registrarEvento } from "./analytics.js";
 import { auth } from "../firebase/firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
@@ -25,12 +27,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!navbarCargado) {
       await cargarNavbar();
       inicializarNavbar();
+      await inicializarNotificaciones();
       navbarCargado = true;
     }
 
+    inicializarAnalytics();
     await migrarDatosLocales();
     activarMenu();
     await loadModule("dashboard");
+    await registrarEvento("sesion_iniciada", { modulo: "dashboard" });
+    iniciarControlSesion();
 
     console.log("✅ SIGEDIS iniciado correctamente");
   } catch (error) {
@@ -113,5 +119,33 @@ function activarMenu() {
     opcion.classList.add("active");
 
     await loadModule(opcion.dataset.module);
+    await registrarEvento("navegacion_modulo", { modulo: opcion.dataset.module });
   });
+}
+
+function iniciarControlSesion() {
+  const TIEMPO_LIMITE = 30 * 60 * 1000;
+  const ALERTA_ANTES = 2 * 60 * 1000;
+  let ultimoEvento = Date.now();
+  let avisoMostrado = false;
+
+  const registrarActividad = () => {
+    ultimoEvento = Date.now();
+    avisoMostrado = false;
+  };
+
+  ["click", "keydown", "mousemove", "scroll"].forEach((evento) => {
+    window.addEventListener(evento, registrarActividad, { passive: true });
+  });
+
+  setInterval(async () => {
+    const inactividad = Date.now() - ultimoEvento;
+    if (!avisoMostrado && inactividad >= (TIEMPO_LIMITE - ALERTA_ANTES)) {
+      avisoMostrado = true;
+      await registrarNotificacion({
+        mensaje: "Tu sesión se cerrará pronto por inactividad.",
+        tipo: "warning"
+      });
+    }
+  }, 30000);
 }

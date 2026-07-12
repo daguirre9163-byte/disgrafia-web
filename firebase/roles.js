@@ -19,7 +19,9 @@ const PERMISOS = {
         "evaluaciones:crear",
         "evaluaciones:editar",
         "actividades:ver",
-        "actividades:crear"
+        "actividades:crear",
+        "reportes:ver",
+        "recursos:ver"
     ],
     [ROLES.ESTUDIANTE]: [
         "perfil:ver",

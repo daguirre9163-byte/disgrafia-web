@@ -1,220 +1,47 @@
 <div class="fade-in">
-
-    <!-- ENCABEZADO -->
-
-    <div class="dashboard-header">
-
-        <div>
-
-            <h2 class="dashboard-title">
-
-                ¡Bienvenido!
-
-            </h2>
-
-            <p class="dashboard-subtitle">
-
-                Sistema Integral para la Gestión de Estudiantes con Disgrafía
-
-            </p>
-
-        </div>
-
-        <div>
-
-            <button class="btn btn-primary">
-
-                <i class="bi bi-plus-circle"></i>
-
-                Nuevo Estudiante
-
-            </button>
-
-        </div>
-
+  <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="dashboard-title">Panel de Gestión Pedagógica</h2>
+      <p class="dashboard-subtitle mb-0">KPIs en tiempo real para docentes</p>
     </div>
+    <button class="btn btn-primary" data-module="estudiantes">
+      <i class="bi bi-plus-circle"></i> Nuevo Estudiante
+    </button>
+  </div>
 
-    <!-- TARJETAS -->
+  <div class="row g-3">
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-primary"><small>Evaluados este mes</small><h3 id="kpiEvaluadosMes">0</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-success"><small>Promedio general</small><h3 id="kpiPromedioGeneral">0</h3><small id="kpiTendencia">0%</small></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-info"><small>Mejora</small><h3 id="kpiMejora">0%</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-danger"><small>Alertas bajo desempeño</small><h3 id="kpiAlertas">0</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-warning"><small>Recursos usados</small><h3 id="kpiRecursos">0</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-dark"><small>Cumplimiento actividades</small><h3 id="kpiCumplimiento">0%</h3></div></div>
+  </div>
 
-    <div class="row g-4 mt-2">
-
-        <div class="col-xl-3 col-md-6">
-
-            <div class="dashboard-card bg-primary">
-
-                <div>
-
-                    <small>Estudiantes</small>
-
-                    <h2 id="totalEstudiantes">0</h2>
-
-                </div>
-
-                <i class="bi bi-mortarboard-fill"></i>
-
-            </div>
-
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-
-            <div class="dashboard-card bg-success">
-
-                <div>
-
-                    <small>Cursos</small>
-
-                    <h2 id="totalCursos">0</h2>
-
-                </div>
-
-                <i class="bi bi-building"></i>
-
-            </div>
-
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-
-            <div class="dashboard-card bg-warning">
-
-                <div>
-
-                    <small>Promedio Evaluaciones</small>
-
-                    <h2 id="totalEvaluaciones">0</h2>
-
-                </div>
-
-                <div class="row mt-4 g-4">
-                    <div class="col-lg-4">
-                        <div class="panel">
-                            <h5>Distribución por disgrafía</h5>
-                            <canvas id="chartDisgrafia"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="panel">
-                            <h5>Progreso por mes</h5>
-                            <canvas id="chartProgresoMes"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="panel">
-                            <h5>Comparativa de evaluaciones</h5>
-                            <canvas id="chartComparativa"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <i class="bi bi-clipboard-check-fill"></i>
-
-            </div>
-
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-
-            <div class="dashboard-card bg-danger">
-
-                <div>
-
-                    <small>Guías</small>
-
-                    <h2 id="totalGuias">0</h2>
-
-                </div>
-
-                <i class="bi bi-journal-bookmark-fill"></i>
-
-            </div>
-
-        </div>
-
+  <div class="row mt-4 g-4">
+    <div class="col-lg-4">
+      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Evolución de promedios</h5><canvas id="chartProgresoMes"></canvas></div></div>
     </div>
-
-    <!-- SEGUNDA FILA -->
-
-    <div class="row mt-4 g-4">
-
-        <!-- ACTIVIDAD -->
-
-        <div class="col-lg-8">
-
-            <div class="panel">
-
-                <h4>
-
-                    <i class="bi bi-clock-history"></i>
-
-                    Actividad reciente
-
-                </h4>
-
-                <hr>
-
-                <div id="actividadReciente">
-
-                    <div class="activity-item">
-
-                        <i class="bi bi-check-circle-fill text-success"></i>
-
-                        Bienvenido a SIGEDIS.
-
-                    </div>
-
-                    <div class="activity-item">
-
-                        <i class="bi bi-check-circle-fill text-success"></i>
-
-                        Firebase conectado correctamente.
-
-                    </div>
-
-                    <div class="activity-item">
-
-                        <i class="bi bi-info-circle-fill text-primary"></i>
-
-                        El sistema está listo para comenzar.
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- CALENDARIO -->
-
-        <div class="col-lg-4">
-
-            <div class="panel">
-
-                <h4>
-
-                    <i class="bi bi-calendar-event"></i>
-
-                    Fecha
-
-                </h4>
-
-                <hr>
-
-                <div class="calendar-box">
-
-                    <h1 id="diaActual"></h1>
-
-                    <h5 id="mesActual"></h5>
-
-                    <p id="anioActual"></p>
-
-                </div>
-
-            </div>
-
-        </div>
-
+    <div class="col-lg-4">
+      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Distribución por disgrafía</h5><canvas id="chartDisgrafia"></canvas></div></div>
     </div>
+    <div class="col-lg-4">
+      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Comparativa mensual</h5><canvas id="chartComparativa"></canvas></div></div>
+    </div>
+  </div>
 
+  <div class="row mt-4 g-4">
+    <div class="col-lg-8">
+      <div class="panel card border-0 shadow-sm"><div class="card-body">
+        <h5>Heatmap de actividades por estudiante</h5>
+        <div id="heatmapActividades" class="table-scroll-x"></div>
+      </div></div>
+    </div>
+    <div class="col-lg-4">
+      <div class="panel card border-0 shadow-sm"><div class="card-body">
+        <h5>Actividad reciente</h5>
+        <div id="actividadReciente" class="small text-muted">Cargando...</div>
+      </div></div>
+    </div>
+  </div>
 </div>

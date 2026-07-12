@@ -1,0 +1,38 @@
+<div class="fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-ui-checks-grid"></i> Actividades</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalActividad">Nueva actividad</button>
+  </div>
+
+  <div class="row g-3 mb-3" id="kpisActividades">
+    <div class="col-md-3"><div class="card border-0 shadow-sm"><div class="card-body"><small>Total</small><h4 id="kpiActividadesTotal">0</h4></div></div></div>
+    <div class="col-md-3"><div class="card border-0 shadow-sm"><div class="card-body"><small>Completadas</small><h4 id="kpiActividadesCompletadas">0</h4></div></div></div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body table-scroll-x">
+      <table class="table table-hover table-advanced">
+        <thead class="table-light">
+          <tr><th>Actividad</th><th>Nivel</th><th>Asignada a</th><th>Progreso</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="tablaActividadesBody"><tr><td colspan="5" class="text-center text-muted">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalActividad" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Nueva actividad</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="formActividad">
+            <div class="mb-2"><label class="form-label">Nombre</label><input id="actividadNombre" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Nivel</label><input id="actividadNivel" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label">Asignar a</label><input id="actividadAsignado" class="form-control" placeholder="Curso o estudiante"></div>
+          </form>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" id="btnGuardarActividad" class="btn btn-primary">Guardar</button></div>
+      </div>
+    </div>
+  </div>
+</div>

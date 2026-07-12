@@ -19,7 +19,10 @@ const COLECCIONES = {
     ESTUDIANTES: "estudiantes",
     EVALUACIONES: "evaluaciones",
     CURSOS: "cursos",
-    ACTIVIDADES: "actividades"
+    ACTIVIDADES: "actividades",
+    RECURSOS: "recursos",
+    NOTIFICACIONES: "notificaciones",
+    ANALYTICS: "analytics"
 };
 
 function sinUndefined(obj = {}) {
@@ -239,6 +242,100 @@ export async function obtenerActividades(filtros = {}) {
 
     const snapshot = await getDocs(consulta);
     return ordenarPorFechaDesc(snapshot.docs.map(desdeDocumento), "fechaCreacion");
+}
+
+// =========================
+// RECURSOS
+// =========================
+export async function crearRecurso(datos) {
+    const usuario = sesionActiva();
+    const referencia = await addDoc(collection(db, COLECCIONES.RECURSOS), {
+        ...sinUndefined(datos),
+        docenteId: datos?.docenteId || usuario.uid,
+        fechaCreacion: serverTimestamp(),
+        fechaActualizacion: serverTimestamp()
+    });
+
+    const documento = await getDoc(referencia);
+    return desdeDocumento(documento);
+}
+
+export async function obtenerRecursos(filtros = {}) {
+    const usuario = auth.currentUser;
+    const esAdmin = filtros.rol === "admin";
+    let consulta = collection(db, COLECCIONES.RECURSOS);
+
+    if (usuario && !esAdmin) {
+        consulta = query(consulta, where("docenteId", "==", usuario.uid));
+    }
+
+    const snapshot = await getDocs(consulta);
+    return ordenarPorFechaDesc(snapshot.docs.map(desdeDocumento), "fechaCreacion");
+}
+
+// =========================
+// NOTIFICACIONES
+// =========================
+export async function crearNotificacion(datos) {
+    const usuario = sesionActiva();
+    const referencia = await addDoc(collection(db, COLECCIONES.NOTIFICACIONES), {
+        ...sinUndefined(datos),
+        docenteId: datos?.docenteId || usuario.uid,
+        leida: Boolean(datos?.leida),
+        fechaCreacion: serverTimestamp()
+    });
+
+    const documento = await getDoc(referencia);
+    return desdeDocumento(documento);
+}
+
+export async function obtenerNotificaciones(filtros = {}) {
+    const usuario = sesionActiva();
+    const consulta = query(
+        collection(db, COLECCIONES.NOTIFICACIONES),
+        where("docenteId", "==", filtros.docenteId || usuario.uid)
+    );
+
+    const snapshot = await getDocs(consulta);
+    const limiteFecha = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    const lista = snapshot.docs.map(desdeDocumento).filter((notificacion) => {
+        const fecha = (notificacion?.fechaCreacion?.seconds || 0) * 1000;
+        return !fecha || fecha >= limiteFecha;
+    });
+
+    return ordenarPorFechaDesc(lista, "fechaCreacion");
+}
+
+export async function marcarNotificacionLeida(id) {
+    await updateDoc(doc(db, COLECCIONES.NOTIFICACIONES, id), {
+        leida: true,
+        fechaActualizacion: serverTimestamp()
+    });
+}
+
+export async function limpiarNotificacionesAntiguas() {
+    const lista = await obtenerNotificaciones();
+    const treintaDias = 30 * 24 * 60 * 60 * 1000;
+    const ahora = Date.now();
+    const aEliminar = lista.filter((item) => {
+        const fecha = (item?.fechaCreacion?.seconds || 0) * 1000;
+        return fecha && (ahora - fecha) > treintaDias;
+    });
+
+    await Promise.all(aEliminar.map((item) => deleteDoc(doc(db, COLECCIONES.NOTIFICACIONES, item.id))));
+    return { eliminadas: aEliminar.length };
+}
+
+// =========================
+// ANALYTICS
+// =========================
+export async function registrarEventoAnalytics(datos) {
+    const usuario = auth.currentUser;
+    await addDoc(collection(db, COLECCIONES.ANALYTICS), {
+        ...sinUndefined(datos),
+        docenteId: datos?.docenteId || usuario?.uid || "anonimo",
+        timestamp: serverTimestamp()
+    });
 }
 
 // Compatibilidad con módulos existentes

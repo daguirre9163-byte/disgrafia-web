@@ -7,6 +7,9 @@
       <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEstudiante">
         <i class="bi bi-plus-circle"></i> Nuevo Estudiante
       </button>
+      <button class="btn btn-outline-secondary ms-2" id="btnVistaEstudiantes" type="button">
+        <i class="bi bi-grid"></i> Vista tarjeta
+      </button>
     </div>
   </div>
 
@@ -26,6 +29,21 @@
             <option value="superior">Básica Superior</option>
             <option value="bachillerato">Bachillerato</option>
           </select>
+        </div>
+        <div class="col-md-6">
+          <select class="form-select" id="filtroDisgrafia">
+            <option value="">-- Todas las disgrafías --</option>
+            <option value="motriz">Motriz</option>
+            <option value="visuoespacial">Visuoespacial</option>
+            <option value="lingüística">Lingüística</option>
+            <option value="mixta">Mixta</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <input type="file" id="csvEstudiantes" class="form-control" accept=".csv">
+        </div>
+        <div class="col-md-6 text-end">
+          <button type="button" id="btnImportarCSV" class="btn btn-outline-primary">Importar CSV</button>
         </div>
       </div>
     </div>
@@ -52,6 +70,8 @@
           </tbody>
         </table>
       </div>
+
+      <div class="row g-3 mt-2 d-none" id="cardsEstudiantes"></div>
     </div>
   </div>
 

@@ -11,7 +11,11 @@ let modal;
 let editando = false;
 let cursoId = null;
 
-document.addEventListener("DOMContentLoaded", init);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 
 async function init() {
   modal = new bootstrap.Modal(document.getElementById("modalCurso"));

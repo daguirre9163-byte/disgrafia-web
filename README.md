@@ -31,6 +31,13 @@
 - Videos y tutoriales
 - Herramientas TIC recomendadas
 
+✅ **FASE 2 - Reportes + Notificaciones + UX**
+- Módulo `reportes` con exportación PDF/Excel/CSV
+- Centro de notificaciones (toast + campana en navbar)
+- Dashboard con KPIs avanzados y comparativas mensuales
+- Wizard de 3 pasos para evaluaciones
+- Analytics básico de interacción y tiempo por página
+
 ✅ **Guías por Nivel Educativo**
 - Educación Inicial
 - Básica Elemental
@@ -117,11 +124,16 @@ disgrafia-web/
 ├── modules/            # Módulos funcionales
 │   ├── dashboard/      # Panel principal
 │   ├── estudiantes/    # Gestión de estudiantes
+│   ├── reportes/       # Reportería avanzada
+│   ├── actividades/    # Gestión de actividades
+│   ├── recursos/       # Biblioteca de recursos
 │   ├── guias/          # Biblioteca de guías
 │   └── seguimiento/    # Seguimiento de progreso
 ├── niveles/            # Guías por nivel educativo
 ├── css/                # Estilos
 ├── js/                 # Lógica JavaScript
+│   ├── analytics.js    # Rastreo de uso
+│   └── notificaciones.js # Toasts + centro
 ├── firebase/           # Configuración Firebase
 ├── constructor.html    # Constructor de currículos
 ├── evaluacion.html     # Sistema de evaluación
@@ -138,6 +150,11 @@ disgrafia-web/
 - Currículos con formato profesional
 - Reportes de evaluación
 - Guías metodológicas imprimibles
+
+### Exportación FASE 2
+- `jsPDF` para reportes visuales
+- `xlsx` para análisis en hojas de cálculo
+- `papaparse` para exportación/importación CSV
 
 ### Accesibilidad
 - Skip links para navegación por teclado
