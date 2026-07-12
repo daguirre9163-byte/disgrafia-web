@@ -1,13 +1,10 @@
-// modules/cursos/cursos.js
-// SIGEDIS - Módulo Cursos (Base)
-
 import {
-  crearCurso,
-  listarCursos,
-  actualizarCurso,
-  eliminarCurso,
-  obtenerCurso
-} from "../../firebase/firestore.js";
+  crearCursoServicio,
+  listarCursosServicio,
+  actualizarCursoServicio,
+  eliminarCursoServicio,
+  obtenerCursoServicio
+} from "./cursos-service.js";
 
 let cursos = [];
 let modal;
@@ -51,9 +48,9 @@ async function guardarCurso() {
   }
 
   if (editando) {
-    await actualizarCurso(cursoId, datos);
+    await actualizarCursoServicio(cursoId, datos);
   } else {
-    await crearCurso(datos);
+    await crearCursoServicio(datos);
   }
 
   modal.hide();
@@ -62,7 +59,7 @@ async function guardarCurso() {
 }
 
 async function cargarCursos() {
-  cursos = await listarCursos();
+  cursos = await listarCursosServicio();
   render(cursos);
   actualizarIndicadores();
 }
@@ -92,7 +89,7 @@ function render(lista) {
         </div>
         <div class="course-body">
           <div class="course-info"><i class="bi bi-clock"></i>${c.jornada}</div>
-          <div class="course-info"><i class="bi bi-mortarboard"></i>${c.totalEstudiantes||0} estudiantes</div>
+          <div class="course-info"><i class="bi bi-mortarboard"></i>${c.totalEstudiantes || 0} estudiantes</div>
         </div>
         <div class="course-footer">
           <button class="btn btn-outline-warning editar" data-id="${c.id}">Editar</button>
@@ -102,48 +99,49 @@ function render(lista) {
     </div>
   `).join("");
 
-  document.querySelectorAll(".editar").forEach(b=>{
-    b.addEventListener("click",()=>editar(b.dataset.id));
+  document.querySelectorAll(".editar").forEach((boton) => {
+    boton.addEventListener("click", () => editar(boton.dataset.id));
   });
 
-  document.querySelectorAll(".eliminar").forEach(b=>{
-    b.addEventListener("click",()=>borrar(b.dataset.id));
+  document.querySelectorAll(".eliminar").forEach((boton) => {
+    boton.addEventListener("click", () => borrar(boton.dataset.id));
   });
 }
 
 function actualizarIndicadores() {
   document.getElementById("totalCursos").textContent = cursos.length;
-  document.getElementById("totalEstudiantes").textContent =
-    cursos.reduce((a,c)=>a+(c.totalEstudiantes||0),0);
+  document.getElementById("totalEstudiantes").textContent = cursos.reduce((acumulado, curso) => {
+    return acumulado + Number(curso.totalEstudiantes || 0);
+  }, 0);
 }
 
-function filtrarCursos(e){
-  const t=e.target.value.toLowerCase();
-  render(cursos.filter(c=>
-    c.nombre.toLowerCase().includes(t) ||
-    c.paralelo.toLowerCase().includes(t) ||
-    c.nivel.toLowerCase().includes(t)
+function filtrarCursos(e) {
+  const texto = e.target.value.toLowerCase();
+  render(cursos.filter(curso =>
+    curso.nombre.toLowerCase().includes(texto) ||
+    curso.paralelo.toLowerCase().includes(texto) ||
+    curso.nivel.toLowerCase().includes(texto)
   ));
 }
 
-async function editar(id){
-  const curso=await obtenerCurso(id);
-  if(!curso) return;
+async function editar(id) {
+  const curso = await obtenerCursoServicio(id);
+  if (!curso) return;
 
-  editando=true;
-  cursoId=id;
+  editando = true;
+  cursoId = id;
 
-  document.getElementById("nombreCurso").value=curso.nombre;
-  document.getElementById("paraleloCurso").value=curso.paralelo;
-  document.getElementById("nivelCurso").value=curso.nivel;
-  document.getElementById("jornadaCurso").value=curso.jornada;
-  document.getElementById("descripcionCurso").value=curso.descripcion||"";
+  document.getElementById("nombreCurso").value = curso.nombre;
+  document.getElementById("paraleloCurso").value = curso.paralelo;
+  document.getElementById("nivelCurso").value = curso.nivel;
+  document.getElementById("jornadaCurso").value = curso.jornada;
+  document.getElementById("descripcionCurso").value = curso.descripcion || "";
 
   modal.show();
 }
 
-async function borrar(id){
-  if(!confirm("¿Eliminar este curso?")) return;
-  await eliminarCurso(id);
+async function borrar(id) {
+  if (!confirm("¿Eliminar este curso?")) return;
+  await eliminarCursoServicio(id);
   await cargarCursos();
 }

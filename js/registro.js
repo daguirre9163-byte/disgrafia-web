@@ -1,103 +1,92 @@
+import { registrarUsuario } from "../firebase/auth.js";
 import {
-createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    validarEmailFormato,
+    validarEmailNoDuplicado,
+    validarContrasenaSegura,
+    validarTelefonoEcuatoriano,
+    sanitizarTexto
+} from "./validaciones.js";
 
-import {
-doc,
-setDoc,
-serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+const formulario = document.getElementById("registroForm");
 
-import { auth, db } from "../firebase/firebase-config.js";
+formulario?.addEventListener("submit", registrar);
 
-const formulario=document.getElementById("registroForm");
+async function registrar(e) {
+    e.preventDefault();
 
-formulario.addEventListener("submit",registrar);
+    const nombre = sanitizarTexto(document.getElementById("nombre").value);
+    const apellido = sanitizarTexto(document.getElementById("apellido").value);
+    const correo = document.getElementById("correo").value.trim().toLowerCase();
+    const institucion = sanitizarTexto(document.getElementById("institucion").value);
+    const telefono = document.getElementById("telefono").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmar = document.getElementById("confirmar").value;
 
-//=====================================
+    if (!nombre || !apellido || !correo || !institucion) {
+        mostrarMensaje("Complete los campos obligatorios.", "warning");
+        return;
+    }
 
-async function registrar(e){
+    const emailValido = validarEmailFormato(correo);
+    if (!emailValido.valido) {
+        mostrarMensaje(emailValido.mensaje, "warning");
+        return;
+    }
 
-e.preventDefault();
+    const emailDisponible = await validarEmailNoDuplicado(correo);
+    if (!emailDisponible.valido) {
+        mostrarMensaje(emailDisponible.mensaje, "warning");
+        return;
+    }
 
-const nombre=document.getElementById("nombre").value.trim();
+    if (telefono) {
+        const telefonoValido = validarTelefonoEcuatoriano(telefono);
+        if (!telefonoValido.valido) {
+            mostrarMensaje(telefonoValido.mensaje, "warning");
+            return;
+        }
+    }
 
-const apellido=document.getElementById("apellido").value.trim();
+    const passwordSegura = validarContrasenaSegura(password);
+    if (!passwordSegura.valido) {
+        mostrarMensaje(passwordSegura.mensaje, "warning");
+        return;
+    }
 
-const correo=document.getElementById("correo").value.trim();
+    if (password !== confirmar) {
+        mostrarMensaje("Las contraseñas no coinciden.", "warning");
+        return;
+    }
 
-const institucion=document.getElementById("institucion").value.trim();
+    const resultado = await registrarUsuario(correo, password, {
+        nombre,
+        apellido,
+        institucion,
+        telefono,
+        rol: "docente"
+    });
 
-const telefono=document.getElementById("telefono").value.trim();
+    if (!resultado.ok) {
+        mostrarMensaje(resultado.mensaje, "danger");
+        return;
+    }
 
-const password=document.getElementById("password").value;
+    mostrarMensaje("Cuenta creada correctamente.", "success");
 
-const confirmar=document.getElementById("confirmar").value;
-
-if(password!==confirmar){
-
-alert("Las contraseñas no coinciden.");
-
-return;
-
+    setTimeout(() => {
+        window.location.href = "login.html";
+    }, 800);
 }
 
-try{
+function mostrarMensaje(texto, tipo) {
+    let alerta = document.getElementById("registroAlerta");
 
-const credencial=await createUserWithEmailAndPassword(
+    if (!alerta) {
+        alerta = document.createElement("div");
+        alerta.id = "registroAlerta";
+        formulario.prepend(alerta);
+    }
 
-auth,
-
-correo,
-
-password
-
-);
-
-await setDoc(
-
-doc(db,"usuarios",credencial.user.uid),
-
-{
-
-uid:credencial.user.uid,
-
-nombre,
-
-apellido,
-
-correo,
-
-institucion,
-
-telefono,
-
-rol:"docente",
-
-estado:"activo",
-
-foto:"",
-
-fechaRegistro:serverTimestamp(),
-
-ultimoIngreso:null
-
-}
-
-);
-
-alert("Cuenta creada correctamente.");
-
-window.location.href="login.html";
-
-}
-
-catch(error){
-
-console.error(error);
-
-alert(error.message);
-
-}
-
+    alerta.className = `alert alert-${tipo}`;
+    alerta.textContent = texto;
 }

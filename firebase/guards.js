@@ -3,105 +3,85 @@ import {
     signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-import {
-    doc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { auth } from "./firebase-config.js";
+import { obtenerUsuario } from "./firestore.js";
+import { aplicarPermisosMenu, validarPermiso as validarPermisoRol } from "./roles.js";
 
-import { auth, db } from "./firebase-config.js";
-import { aplicarPermisosMenu } from "./roles.js";
+function redirigir(ruta) {
+    window.location.replace(ruta);
+}
 
-/**
- * Protege páginas privadas (dashboard.html)
- */
-export function protegerPagina() {
+async function obtenerPerfil(user) {
+    if (!user) {
+        return null;
+    }
 
+    return obtenerUsuario(user.uid);
+}
+
+export function validarPermiso(usuario, accion, recurso) {
+    return validarPermisoRol(usuario, accion, recurso);
+}
+
+export function protegerRuta(permisoRequerido) {
     onAuthStateChanged(auth, async (user) => {
-
         if (!user) {
-
-            window.location.replace("login.html");
+            redirigir("login.html");
             return;
-
         }
 
         try {
+            const perfil = await obtenerPerfil(user);
 
-            const docRef = doc(db, "usuarios", user.uid);
-            const docSnap = await getDoc(docRef);
-
-            if (!docSnap.exists()) {
-
+            if (!perfil || perfil.estado === "inactivo") {
                 await signOut(auth);
-                window.location.replace("login.html");
+                redirigir("login.html");
                 return;
-
             }
 
-            const datos = docSnap.data();
+            if (permisoRequerido) {
+                const [recurso, accion] = permisoRequerido.split(":");
+                if (!validarPermiso(perfil, accion, recurso)) {
+                    redirigir("403.html");
+                    return;
+                }
+            }
 
-            
-
-            // Sidebar
             const sidebarNombre = document.getElementById("userName");
             const sidebarRol = document.getElementById("userRole");
-
-
-            // Navbar
             const navbarNombre = document.getElementById("navbarUserName");
             const navbarRol = document.getElementById("navbarUserRole");
 
-            if (sidebarNombre) sidebarNombre.textContent = datos.nombre + " " + datos.apellido;
-            if (sidebarRol) sidebarRol.textContent = datos.rol;
+            if (sidebarNombre) sidebarNombre.textContent = `${perfil.nombre} ${perfil.apellido}`.trim();
+            if (sidebarRol) sidebarRol.textContent = perfil.rol;
+            if (navbarNombre) navbarNombre.textContent = perfil.nombre || "Usuario";
+            if (navbarRol) navbarRol.textContent = perfil.rol;
 
-            if (navbarNombre) navbarNombre.textContent = datos.nombre;
-            if (navbarRol) navbarRol.textContent = datos.rol;
-
-            
-            aplicarPermisosMenu(datos.rol);
-
+            aplicarPermisosMenu(perfil.rol);
         } catch (error) {
-
             console.error(error);
-
+            redirigir("login.html");
         }
-
     });
-
 }
 
-/**
- * Evita que un usuario autenticado vuelva al login
- */
+export function protegerPagina() {
+    protegerRuta();
+}
+
 export function protegerLogin() {
-
     onAuthStateChanged(auth, (user) => {
-
         if (user) {
-
-            window.location.replace("dashboard.html");
-
+            redirigir("dashboard.html");
         }
-
     });
-
 }
 
-/**
- * Cerrar sesión
- */
 export async function cerrarSesion() {
-
     try {
-
         await signOut(auth);
-
-        window.location.replace("login.html");
-
+        redirigir("login.html");
     } catch (error) {
-
         console.error(error);
-
     }
-
 }

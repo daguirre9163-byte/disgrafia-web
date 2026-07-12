@@ -8,9 +8,15 @@ export async function loadModule(moduleName) {
       contentArea.innerHTML = html;
       
       // Cargar script del módulo
+      const scriptPrevio = document.getElementById('module-script');
+      if (scriptPrevio) {
+        scriptPrevio.remove();
+      }
+
       const script = document.createElement('script');
       script.src = `modules/${moduleName}/${moduleName}.js`;
       script.type = 'module';
+      script.id = 'module-script';
       document.body.appendChild(script);
     }
   } catch (error) {

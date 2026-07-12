@@ -1,69 +1,117 @@
-import { loadModule } from './router.js';
-import { inicializarSidebar } from '../components/sidebar/sidebar.js';
-import { inicializarNavbar } from '../components/navbar/navbar.js';
+import { loadModule } from "./router.js";
+import { inicializarSidebar } from "../components/sidebar/sidebar.js";
+import { inicializarNavbar } from "../components/navbar/navbar.js";
+import { migrarLocalStorageAFirestore } from "./firestore-service.js";
+import { crearEstudiante, crearEvaluacion, crearActividad } from "../firebase/firestore.js";
+import { auth } from "../firebase/firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 let sidebarCargado = false;
 let navbarCargado = false;
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Restaurar tema
-    const tema = localStorage.getItem('sigedis.theme') || 'light';
-    if (tema === 'dark') {
-      document.body.classList.add('dark-mode');
+    const tema = localStorage.getItem("sigedis.theme") || "light";
+    if (tema === "dark") {
+      document.body.classList.add("dark-mode");
     }
 
-    // Cargar componentes
     if (!sidebarCargado) {
       await cargarSidebar();
       inicializarSidebar();
       sidebarCargado = true;
     }
-    
+
     if (!navbarCargado) {
       await cargarNavbar();
       inicializarNavbar();
       navbarCargado = true;
     }
 
-    // Activar menú
+    await migrarDatosLocales();
     activarMenu();
+    await loadModule("dashboard");
 
-    // Cargar dashboard por defecto
-    await loadModule('dashboard');
-
-    console.log('✅ SIGEDIS iniciado correctamente');
+    console.log("✅ SIGEDIS iniciado correctamente");
   } catch (error) {
-    console.error('Error al iniciar SIGEDIS:', error);
+    console.error("Error al iniciar SIGEDIS:", error);
   }
 });
 
 async function cargarSidebar() {
-  const response = await fetch('components/sidebar/sidebar.html');
-  document.getElementById('sidebar').innerHTML = await response.text();
+  const response = await fetch("components/sidebar/sidebar.html");
+  document.getElementById("sidebar").innerHTML = await response.text();
 }
 
 async function cargarNavbar() {
-  const response = await fetch('components/navbar/navbar.html');
-  document.getElementById('navbar').innerHTML = await response.text();
+  const response = await fetch("components/navbar/navbar.html");
+  document.getElementById("navbar").innerHTML = await response.text();
+}
+
+async function migrarDatosLocales() {
+  const usuario = await obtenerUsuarioActual();
+  if (!usuario) {
+    return;
+  }
+
+  if (!localStorage.getItem("migracion.firestore.v1")) {
+    await migrarLocalStorageAFirestore({
+      localStorageKey: "estudiantes",
+      crearRegistro: crearEstudiante,
+      transformador: (item) => ({
+        nombre: item.nombre,
+        nivel: item.nivel,
+        disgrafia: item.disgrafia,
+        tiposDisgrafia: item.disgrafia ? [item.disgrafia] : []
+      })
+    });
+
+    await migrarLocalStorageAFirestore({
+      localStorageKey: "evaluaciones",
+      crearRegistro: crearEvaluacion
+    });
+
+    await migrarLocalStorageAFirestore({
+      localStorageKey: "curriculum",
+      crearRegistro: crearActividad,
+      transformador: (item) => ({
+        nombre: item.nombre,
+        descripcion: item.descripcion,
+        nivel: item.nivel,
+        tiposDisgrafia: item.tiposDisgrafia || []
+      })
+    });
+
+    localStorage.setItem("migracion.firestore.v1", "ok");
+  }
+
+  function obtenerUsuarioActual() {
+    if (auth.currentUser) {
+      return Promise.resolve(auth.currentUser);
+    }
+
+    return new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (user) => {
+        unsub();
+        resolve(user || null);
+      });
+    });
+  }
 }
 
 function activarMenu() {
-  document.addEventListener('click', async (e) => {
-    const opcion = e.target.closest('.menu-link');
-    if (!opcion) return;
+  document.addEventListener("click", async (e) => {
+    const opcion = e.target.closest(".menu-link");
+    if (!opcion || !opcion.dataset.module) return;
 
     e.preventDefault();
 
-    document.querySelectorAll('.menu-link').forEach(item => {
-      item.classList.remove('active');
+    document.querySelectorAll(".menu-link").forEach((item) => {
+      item.classList.remove("active");
     });
 
-    opcion.classList.add('active');
+    opcion.classList.add("active");
 
-    const modulo = opcion.dataset.module;
-    if (modulo) {
-      await loadModule(modulo);
-    }
+    await loadModule(opcion.dataset.module);
   });
 }

@@ -154,6 +154,35 @@ Si deseas conectar tu propia instancia de Firebase:
 4. Crea base de datos Firestore
 5. Define reglas de seguridad
 
+### Estructura de colecciones (FASE 1 MVP)
+
+- `usuarios`: perfil, rol y estado del usuario autenticado.
+- `cursos`: cursos creados por docente con relación de estudiantes.
+- `estudiantes`: ficha de estudiantes con tipo de disgrafía y curso.
+- `evaluaciones`: evaluaciones históricas por estudiante y curso.
+- `actividades`: actividades y recursos pedagógicos por nivel.
+
+### Reglas de seguridad recomendadas
+
+Se incluye un ejemplo base en:
+
+- `firebase/reglas.firestore`
+
+Este archivo contempla:
+
+- Solo usuarios autenticados pueden acceder a datos.
+- `admin` puede gestionar toda la información.
+- `docente` solo puede gestionar documentos asociados a su `docenteId`.
+
+### Validaciones implementadas
+
+El archivo `js/validaciones.js` centraliza validaciones de:
+
+- Correo electrónico (formato y duplicidad en Firestore).
+- Contraseña segura (mínimo 8 caracteres, mayúscula y número).
+- Cédula ecuatoriana (10 dígitos con verificador).
+- Teléfono ecuatoriano (10 dígitos iniciando con `0`).
+
 ## Contribución
 
 Este proyecto es de código abierto. Para contribuir:

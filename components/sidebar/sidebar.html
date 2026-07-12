@@ -1,4 +1,3 @@
-<!-- Sidebar Navigation -->
 <aside id="sidebar" class="sidebar">
   <div class="sidebar-header">
     <h3><i class="bi bi-book"></i> SIGEDIS</h3>
@@ -10,33 +9,39 @@
   <nav class="sidebar-nav">
     <ul class="menu-list">
       <li>
-        <a href="#" class="menu-link" data-module="dashboard" aria-label="Dashboard">
+        <a href="#" class="menu-link" data-module="dashboard" data-permiso="dashboard:ver" aria-label="Dashboard">
           <i class="bi bi-house-door-fill"></i>
           <span>Dashboard</span>
         </a>
       </li>
       <li>
-        <a href="#" class="menu-link" data-module="cursos" aria-label="Mis Cursos">
+        <a href="#" class="menu-link" data-module="cursos" data-permiso="cursos:ver" aria-label="Mis Cursos">
           <i class="bi bi-book-fill"></i>
           <span>Mis Cursos</span>
         </a>
       </li>
       <li>
-        <a href="#" class="menu-link" data-module="estudiantes" aria-label="Estudiantes">
+        <a href="#" class="menu-link" data-module="estudiantes" data-permiso="estudiantes:ver" aria-label="Estudiantes">
           <i class="bi bi-people-fill"></i>
           <span>Estudiantes</span>
         </a>
       </li>
       <li>
-        <a href="#" class="menu-link" data-module="guias" aria-label="Guías">
-          <i class="bi bi-journal-bookmark-fill"></i>
-          <span>Guías Metodológicas</span>
+        <a href="#" class="menu-link" data-module="evaluacion" data-permiso="evaluaciones:ver" aria-label="Evaluación">
+          <i class="bi bi-clipboard-check"></i>
+          <span>Evaluación</span>
         </a>
       </li>
       <li>
-        <a href="#" class="menu-link" data-module="seguimiento" aria-label="Seguimiento">
+        <a href="#" class="menu-link" data-module="seguimiento" data-permiso="evaluaciones:ver" aria-label="Seguimiento">
           <i class="bi bi-graph-up-arrow"></i>
           <span>Seguimiento</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="menu-link" data-module="guias" data-permiso="actividades:ver" aria-label="Guías">
+          <i class="bi bi-journal-bookmark-fill"></i>
+          <span>Guías Metodológicas</span>
         </a>
       </li>
       <hr class="sidebar-divider">
@@ -44,12 +49,6 @@
         <a href="constructor.html" class="menu-link" aria-label="Constructor">
           <i class="bi bi-hammer"></i>
           <span>Constructor</span>
-        </a>
-      </li>
-      <li>
-        <a href="evaluacion.html" class="menu-link" aria-label="Evaluación">
-          <i class="bi bi-clipboard-check"></i>
-          <span>Evaluación</span>
         </a>
       </li>
       <li>
