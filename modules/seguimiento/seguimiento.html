@@ -1,0 +1,77 @@
+<div class="fade-in">
+  <h2><i class="bi bi-graph-up-arrow"></i> Seguimiento de Estudiantes</h2>
+  <p class="lead text-muted mb-4">Visualiza el progreso de cada estudiante</p>
+
+  <!-- Selector de Estudiante -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label"><strong>Selecciona un estudiante:</strong></label>
+          <select class="form-select" id="selectEstudiante" onchange="cargarSeguimiento()">
+            <option value="">-- Elige un estudiante --</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información del Estudiante -->
+  <div id="infoEstudiante"></div>
+
+  <!-- Progreso -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">Evaluaciones Realizadas</h5>
+        </div>
+        <div class="card-body" id="evaluacionesList">
+          <p class="text-muted">Selecciona un estudiante</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Evolución de Calificaciones</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="graficoProgreso"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function cargarSeguimiento() {
+  const id = document.getElementById('selectEstudiante').value;
+  if (!id) {
+    document.getElementById('infoEstudiante').innerHTML = '';
+    return;
+  }
+  
+  const estudiantes = JSON.parse(localStorage.getItem('estudiantes')) || [];
+  const est = estudiantes.find(e => e.id == id);
+  
+  if (est) {
+    document.getElementById('infoEstudiante').innerHTML = `
+      <div class="card mb-4 border-0 shadow-sm bg-light">
+        <div class="card-body">
+          <h5>${est.nombre}</h5>
+          <p class="mb-1"><strong>Nivel:</strong> ${est.nivel}</p>
+          <p class="mb-0"><strong>Tipo de Disgrafía:</strong> <span class="badge bg-info">${est.disgrafia}</span></p>
+        </div>
+      </div>
+    `;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const estudiantes = JSON.parse(localStorage.getItem('estudiantes')) || [];
+  const select = document.getElementById('selectEstudiante');
+  select.innerHTML = '<option value="">-- Elige un estudiante --</option>' + 
+    estudiantes.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+});
+</script>

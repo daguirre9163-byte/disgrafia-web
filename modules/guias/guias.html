@@ -1,0 +1,89 @@
+<div class="fade-in">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2><i class="bi bi-journal-bookmark-fill"></i> Guías Metodológicas</h2>
+    </div>
+    <div class="col-md-4 text-end">
+      <a href="recursos.html" class="btn btn-success">
+        <i class="bi bi-collection"></i> Ver Recursos
+      </a>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Tipo de Disgrafía</label>
+          <select class="form-select" id="filtroTipo" onchange="filtrar()">
+            <option value="">-- Todos --</option>
+            <option value="motriz">Motriz</option>
+            <option value="visuoespacial">Visuoespacial</option>
+            <option value="linguistica">Lingüística</option>
+            <option value="mixta">Mixta</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Nivel Educativo</label>
+          <select class="form-select" id="filtroNivel" onchange="filtrar()">
+            <option value="">-- Todos --</option>
+            <option value="inicial">Inicial</option>
+            <option value="elemental">Elemental</option>
+            <option value="media">Media</option>
+            <option value="superior">Superior</option>
+            <option value="bachillerato">Bachillerato</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Búsqueda</label>
+          <input type="text" class="form-control" id="busqueda" onkeyup="filtrar()" placeholder="Buscar...">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Guías -->
+  <div class="row g-4" id="guiasList">
+    <div class="col-12 text-center text-muted">
+      <p>Cargando guías...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const guias = [
+  { id: 1, titulo: 'Estrategias para Disgrafía Motriz', tipo: 'motriz', nivel: 'elemental', descripcion: 'Ejercicios prácticos para mejorar control motor' },
+  { id: 2, titulo: 'Organización Espacial en la Escritura', tipo: 'visuoespacial', nivel: 'media', descripcion: 'Técnicas de distribución visual en el papel' },
+  { id: 3, titulo: 'Producción de Textos', tipo: 'linguistica', nivel: 'superior', descripcion: 'Estrategias para mejorar expresión escrita' }
+];
+
+function renderizar() {
+  const lista = document.getElementById('guiasList');
+  if (guias.length === 0) {
+    lista.innerHTML = '<div class="col-12 text-center text-muted"><p>No hay guías disponibles</p></div>';
+    return;
+  }
+  lista.innerHTML = guias.map(g => `
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">${g.titulo}</h5>
+          <p class="small text-muted mb-2">${g.descripcion}</p>
+          <div class="mb-3">
+            <span class="badge bg-info">${g.tipo}</span>
+            <span class="badge bg-primary">${g.nivel}</span>
+          </div>
+          <a href="#" class="btn btn-sm btn-primary w-100"><i class="bi bi-download"></i> Descargar</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filtrar() {
+  renderizar();
+}
+
+document.addEventListener('DOMContentLoaded', renderizar);
+</script>

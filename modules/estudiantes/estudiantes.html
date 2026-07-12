@@ -1,0 +1,100 @@
+<div class="fade-in">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2><i class="bi bi-people-fill"></i> Gestión de Estudiantes</h2>
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEstudiante">
+        <i class="bi bi-plus-circle"></i> Nuevo Estudiante
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="filtroEstudiante" placeholder="Filtrar por nombre...">
+        </div>
+        <div class="col-md-6">
+          <select class="form-select" id="filtroNivel">
+            <option value="">-- Todos los niveles --</option>
+            <option value="inicial">Educación Inicial</option>
+            <option value="elemental">Básica Elemental</option>
+            <option value="media">Básica Media</option>
+            <option value="superior">Básica Superior</option>
+            <option value="bachillerato">Bachillerato</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Estudiantes -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Nivel</th>
+              <th>Tipo de Disgrafía</th>
+              <th>Evaluaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaEstudiantes">
+            <tr>
+              <td colspan="5" class="text-center text-muted">Cargando estudiantes...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nuevo Estudiante -->
+  <div class="modal fade" id="modalEstudiante" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Nuevo Estudiante</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formEstudiante">
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombreEst" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nivel</label>
+              <select class="form-select" id="nivelEst" required>
+                <option>Educación Inicial</option>
+                <option>Básica Elemental</option>
+                <option>Básica Media</option>
+                <option>Básica Superior</option>
+                <option>Bachillerato</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tipo de Disgrafía</label>
+              <select class="form-select" id="disgrafia" required>
+                <option>Motriz</option>
+                <option>Visuoespacial</option>
+                <option>Lingüística</option>
+                <option>Mixta</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="guardarEstudiante()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

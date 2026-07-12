@@ -1,35 +1,23 @@
-const fecha=new Date();
+// Dashboard logic
+console.log('Dashboard cargado');
 
-const meses=[
+document.addEventListener('DOMContentLoaded', function() {
+  // Actualizar datos del dashboard
+  const totalEst = document.getElementById('totalEstudiantes');
+  const totalCurs = document.getElementById('totalCursos');
+  const totalEval = document.getElementById('totalEvaluaciones');
+  const totalGu = document.getElementById('totalGuias');
 
-"Enero",
+  if (totalEst) totalEst.textContent = localStorage.getItem('estudiantes') ? JSON.parse(localStorage.getItem('estudiantes')).length : '0';
+  if (totalCurs) totalCurs.textContent = '0';
+  if (totalEval) totalEval.textContent = '0';
+  if (totalGu) totalGu.textContent = '0';
 
-"Febrero",
-
-"Marzo",
-
-"Abril",
-
-"Mayo",
-
-"Junio",
-
-"Julio",
-
-"Agosto",
-
-"Septiembre",
-
-"Octubre",
-
-"Noviembre",
-
-"Diciembre"
-
-];
-
-document.getElementById("diaActual").textContent=fecha.getDate();
-
-document.getElementById("mesActual").textContent=meses[fecha.getMonth()];
-
-document.getElementById("anioActual").textContent=fecha.getFullYear();
+  // Actualizar fecha
+  const hoy = new Date();
+  if (document.getElementById('diaActual')) {
+    document.getElementById('diaActual').textContent = hoy.getDate();
+    document.getElementById('mesActual').textContent = hoy.toLocaleDateString('es-ES', { month: 'long' });
+    document.getElementById('anioActual').textContent = hoy.getFullYear();
+  }
+});

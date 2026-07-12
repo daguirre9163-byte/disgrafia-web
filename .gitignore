@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+npm-debug.log
+
+# Firebase
+.firebaserc
+firebase-debug.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
