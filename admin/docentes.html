@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docentes Admin | SIGEDIS</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <h2>SIGEDIS Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active" href="docentes.html">Docentes</a>
+    <a href="instituciones.html">Instituciones</a>
+    <a href="usuarios.html">Usuarios</a>
+    <a href="auditoria.html">Auditoría</a>
+  </aside>
+  <main class="admin-main">
+    <h1>Gestión de Docentes</h1>
+    <form class="toolbar" id="formDocente">
+      <input name="nombre" placeholder="Nombre" required />
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="institucion" placeholder="Institución" required />
+      <select name="rol"><option>docente</option><option>coordinador</option><option>admin institucional</option></select>
+      <button type="submit">Crear docente</button>
+    </form>
+    <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Email</th><th>Institución</th><th>Estado</th><th>Estudiantes</th><th>Evaluaciones</th><th>Acciones</th></tr></thead><tbody id="docentesBody"></tbody></table></div>
+  </main>
+</div>
+<script type="module" src="js/docentes-admin.js"></script>
+</body>
+</html>

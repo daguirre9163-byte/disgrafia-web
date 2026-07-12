@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuarios Admin | SIGEDIS</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <h2>SIGEDIS Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="docentes.html">Docentes</a>
+    <a href="instituciones.html">Instituciones</a>
+    <a class="active" href="usuarios.html">Usuarios</a>
+    <a href="auditoria.html">Auditoría</a>
+  </aside>
+  <main class="admin-main">
+    <h1>Gestión de Usuarios</h1>
+    <div class="toolbar">
+      <input id="searchUsuario" placeholder="Buscar usuario" />
+      <select id="filtroRol"><option value="">Todos los roles</option><option value="admin">admin</option><option value="docente">docente</option><option value="estudiante">estudiante</option></select>
+      <select id="filtroEstado"><option value="">Todos</option><option value="activo">activo</option><option value="bloqueado">bloqueado</option></select>
+      <button id="bulkBloquear">Bloquear seleccionados</button>
+      <button id="bulkEliminar">Eliminar seleccionados</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="selectAll" /></th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Institución</th><th>Acciones</th></tr></thead><tbody id="usuariosBody"></tbody></table></div>
+  </main>
+</div>
+<script type="module" src="js/usuarios-admin.js"></script>
+</body>
+</html>

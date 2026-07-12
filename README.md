@@ -38,6 +38,13 @@
 - Wizard de 3 pasos para evaluaciones
 - Analytics básico de interacción y tiempo por página
 
+✅ **FASE 3 - Admin + API + Producción**
+- Panel administrativo en `/admin` (dashboard, docentes, instituciones, usuarios y auditoría)
+- API REST versionada en `/api/v1` con JWT, rate limiting y auditoría
+- Base PWA (`public/app.webmanifest`, `public/service-worker.js`, `public/offline.html`)
+- CI/CD base en `.github/workflows/test.yml` y `.github/workflows/deploy.yml`
+- Documentación técnica en `docs/` (Development, Deployment, API y Arquitectura)
+
 ✅ **Guías por Nivel Educativo**
 - Educación Inicial
 - Básica Elemental
@@ -135,6 +142,11 @@ disgrafia-web/
 │   ├── analytics.js    # Rastreo de uso
 │   └── notificaciones.js # Toasts + centro
 ├── firebase/           # Configuración Firebase
+├── admin/              # Panel administrativo FASE 3
+├── api/                # API REST FASE 3
+├── public/             # Archivos PWA (manifest, SW, offline)
+├── docs/               # Documentación profesional
+├── tests/              # Tests unitarios y E2E (base)
 ├── constructor.html    # Constructor de currículos
 ├── evaluacion.html     # Sistema de evaluación
 └── recursos.html       # Centro de recursos

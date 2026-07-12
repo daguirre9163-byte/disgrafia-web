@@ -32,4 +32,13 @@ const db = getFirestore(app);
 
 const storage = getStorage(app);
 
-export { app, auth, db, storage };
+const backendConfig = {
+    apiBaseUrl: "/api/v1",
+    corsAllowedOrigins: ["*"],
+    rateLimitAuthenticated: 100,
+    rateLimitAnonymous: 10,
+    jwtAccessTokenMinutes: 60,
+    jwtRefreshTokenDays: 7
+};
+
+export { app, auth, db, storage, backendConfig };

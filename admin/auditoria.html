@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditoría Admin | SIGEDIS</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <h2>SIGEDIS Admin</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="docentes.html">Docentes</a>
+    <a href="instituciones.html">Instituciones</a>
+    <a href="usuarios.html">Usuarios</a>
+    <a class="active" href="auditoria.html">Auditoría</a>
+  </aside>
+  <main class="admin-main">
+    <h1>Auditoría</h1>
+    <div class="toolbar">
+      <input id="filtroUsuario" placeholder="Filtrar por usuario" />
+      <input id="filtroTipo" placeholder="Tipo de acción" />
+      <input id="filtroFecha" type="date" />
+      <button id="btnExportCsv">Exportar CSV</button>
+    </div>
+    <small class="muted">Mostrando últimas 100 acciones.</small>
+    <div class="table-wrap"><table><thead><tr><th>Quién</th><th>Qué</th><th>Cuándo</th><th>Antes</th><th>Después</th><th>IP/Navegador</th><th>Estado</th></tr></thead><tbody id="auditoriaBody"></tbody></table></div>
+  </main>
+</div>
+<script type="module" src="js/auditoria-admin.js"></script>
+</body>
+</html>

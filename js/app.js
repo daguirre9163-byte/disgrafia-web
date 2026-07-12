@@ -13,6 +13,12 @@ let navbarCargado = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/public/service-worker.js").catch((error) => {
+        console.warn("No se pudo registrar el Service Worker:", error);
+      });
+    }
+
     const tema = localStorage.getItem("sigedis.theme") || "light";
     if (tema === "dark") {
       document.body.classList.add("dark-mode");

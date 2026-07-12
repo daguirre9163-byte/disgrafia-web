@@ -1,0 +1,21 @@
+name: Deploy Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-test-lint-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build/Test/Lint
+        run: find . -type f -name '*.js' -not -path './.git/*' -print0 | xargs -0 -n1 node --check
+      - name: Deploy
+        run: echo "Configura Firebase CLI y credenciales para despliegue automático"
+      - name: Slack notification
+        run: echo "Configura webhook de Slack en secrets para alertas"

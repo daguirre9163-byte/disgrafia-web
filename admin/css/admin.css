@@ -1,0 +1,84 @@
+:root {
+  --admin-primary: #0d6efd;
+  --admin-bg: #f8fafc;
+  --admin-border: #dbe2ea;
+}
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: var(--admin-bg);
+  margin: 0;
+}
+.admin-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+.admin-sidebar {
+  background: #0f172a;
+  color: #fff;
+  padding: 1rem;
+}
+.admin-sidebar a {
+  color: #cbd5e1;
+  text-decoration: none;
+  display: block;
+  padding: .6rem .7rem;
+  border-radius: .5rem;
+  margin-bottom: .4rem;
+}
+.admin-sidebar a.active,
+.admin-sidebar a:hover {
+  background: #1e293b;
+  color: #fff;
+}
+.admin-main { padding: 1.2rem; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .8rem;
+}
+.card {
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: .7rem;
+  padding: .85rem;
+}
+.table-wrap {
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: .7rem;
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  text-align: left;
+  padding: .7rem;
+  border-bottom: 1px solid #edf2f7;
+  font-size: .9rem;
+}
+.toolbar {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin: .8rem 0;
+}
+input, select, button, textarea {
+  border: 1px solid var(--admin-border);
+  border-radius: .5rem;
+  padding: .5rem .6rem;
+  font: inherit;
+}
+button {
+  background: var(--admin-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+small.muted { color: #64748b; }
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+}
