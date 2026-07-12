@@ -1,0 +1,48 @@
+<div class="fade-in">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Estudiantes</h2>
+      <p class="module-subtitle">Listado y perfil básico de estudiantes por curso.</p>
+    </div>
+    <button id="btnNuevoEstudiante" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Estudiante</button>
+  </div>
+
+  <div class="search-container">
+    <div class="input-group">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input id="buscarEstudiante" class="form-control" placeholder="Buscar por nombre o curso">
+    </div>
+  </div>
+
+  <div id="contenedorEstudiantes" class="row g-3 mt-2"></div>
+</div>
+
+<div class="modal fade" id="modalEstudiante" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Estudiante</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEstudiante">
+          <input type="hidden" id="estudianteId">
+          <div class="mb-3"><label class="form-label">Nombre completo</label><input id="nombreEstudiante" class="form-control" required></div>
+          <div class="mb-3"><label class="form-label">Curso</label><input id="cursoEstudiante" class="form-control" required></div>
+          <div class="mb-3"><label class="form-label">Tipo de disgrafía</label>
+            <select id="tipoDisgrafia" class="form-select">
+              <option value="motora">Motora</option>
+              <option value="espacial">Espacial</option>
+              <option value="mixta">Mixta</option>
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label">Observaciones</label><textarea id="observacionesEstudiante" rows="3" class="form-control"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="btnGuardarEstudiante" type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

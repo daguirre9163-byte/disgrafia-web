@@ -1,0 +1,9 @@
+.student-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  padding: 1rem;
+  height: 100%;
+}
+.student-card .meta { color:#64748B; font-size:.9rem; }
+.student-actions { display:flex; gap:.5rem; margin-top: .75rem; }

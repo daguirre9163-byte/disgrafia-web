@@ -1,0 +1,10 @@
+/* Estilos específicos de la navbar */
+.navbar-container {
+    min-height: 75px;
+}
+
+.navbar-right .icon-button:focus-visible,
+.search-box input:focus-visible {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+}
