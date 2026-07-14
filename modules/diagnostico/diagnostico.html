@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Diagnóstico - SIGEDIS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/diagnostico.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../../dashboard.html">
+                    <i class="bi bi-activity"></i> SIGEDIS - Diagnóstico
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../dashboard.html">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn btn-outline-light btn-sm" id="btnTema">
+                                <i class="bi bi-moon-stars"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Contenedor Principal -->
+        <div class="container-fluid py-4">
+            <!-- Barra de Progreso -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="progreso-container">
+                        <div class="progress" style="height: 8px;">
+                            <div id="barraProgreso" class="progress-bar bg-success" role="progressbar" style="width: 10%"></div>
+                        </div>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <small class="text-muted">Paso <span id="numeroPaso">1</span> de 10</small>
+                            <small class="text-muted" id="etapaActual">Información del Estudiante</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario Wizard -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg wizard-container">
+                        <!-- Paso 1: Información Básica -->
+                        <div class="paso-wizard" id="paso1" data-paso="1">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-person-lines-fill"></i> Información del Estudiante
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre del Estudiante *</label>
+                                    <input type="text" class="form-control" id="nombreEstudiante" placeholder="Ej: Juan Pérez" required>
+                                    <small class="form-text text-muted">Nombre completo del estudiante</small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Edad *</label>
+                                            <input type="number" class="form-control" id="edadEstudiante" min="4" max="18" placeholder="Ej: 8" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nivel Educativo *</label>
+                                            <select class="form-select" id="nivelEducativo" required>
+                                                <option value="">Selecciona nivel...</option>
+                                                <option value="inicial">Educación Inicial (4-5)</option>
+                                                <option value="basica_elemental">Básica Elemental (6-7)</option>
+                                                <option value="basica_media">Básica Media (8-9)</option>
+                                                <option value="basica_superior">Básica Superior (10-12)</option>
+                                                <option value="bachillerato">Bachillerato (13-18)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 2: Síntomas Motores -->
+                        <div class="paso-wizard" id="paso2" data-paso="2" style="display: none;">
+                            <div class="card-header bg-info text-white">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-hand-index"></i> Síntomas Motores
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">¿El estudiante presenta estas características?</p>
+                                <div class="indicadores-lista">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="motriz1" name="motriz" value="mala_coordinacion">
+                                        <label class="form-check-label" for="motriz1">
+                                            <strong>Mala coordinación motora fina</strong>
+                                            <br><small class="text-muted">Dificultad para sostener el lápiz correctamente</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="motriz2" name="motriz" value="presion_irregular">
+                                        <label class="form-check-label" for="motriz2">
+                                            <strong>Presión irregular del lápiz</strong>
+                                            <br><small class="text-muted">A veces muy fuerte, a veces muy suave</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="motriz3" name="motriz" value="escritura_lenta">
+                                        <label class="form-check-label" for="motriz3">
+                                            <strong>Escritura lenta y fatigosa</strong>
+                                            <br><small class="text-muted">Se cansa rápidamente al escribir</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="motriz4" name="motriz" value="tamanio_inconsistente">
+                                        <label class="form-check-label" for="motriz4">
+                                            <strong>Tamaño de letra inconsistente</strong>
+                                            <br><small class="text-muted">Las letras no mantienen tamaño uniforme</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 3: Síntomas Espaciales -->
+                        <div class="paso-wizard" id="paso3" data-paso="3" style="display: none;">
+                            <div class="card-header bg-warning text-dark">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-diagram-3"></i> Síntomas Espaciales
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">¿Observa estas dificultades con el espacio?</p>
+                                <div class="indicadores-lista">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="espacial1" name="espacial" value="fuera_margenes">
+                                        <label class="form-check-label" for="espacial1">
+                                            <strong>Escribe fuera de márgenes</strong>
+                                            <br><small class="text-muted">No respeta los límites de la página</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="espacial2" name="espacial" value="espaciamiento_irregular">
+                                        <label class="form-check-label" for="espacial2">
+                                            <strong>Espaciamiento irregular entre letras</strong>
+                                            <br><small class="text-muted">A veces muy juntas, a veces muy separadas</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="espacial3" name="espacial" value="alineacion_deficiente">
+                                        <label class="form-check-label" for="espacial3">
+                                            <strong>Falta de alineación en renglones</strong>
+                                            <br><small class="text-muted">Las letras suben y bajan en la línea</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="espacial4" name="espacial" value="renglones_desiguales">
+                                        <label class="form-check-label" for="espacial4">
+                                            <strong>Renglones desiguales</strong>
+                                            <br><small class="text-muted">No mantiene líneas paralelas</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 4: Síntomas de Conversión Letra-Sonido -->
+                        <div class="paso-wizard" id="paso4" data-paso="4" style="display: none;">
+                            <div class="card-header bg-danger text-white">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-arrow-left-right"></i> Conversión Letra-Sonido
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">¿El estudiante muestra estos errores?</p>
+                                <div class="indicadores-lista">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="conversion1" name="conversion" value="inversiones">
+                                        <label class="form-check-label" for="conversion1">
+                                            <strong>Inversión de letras</strong>
+                                            <br><small class="text-muted">Escribe b/d, p/q invertidas</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="conversion2" name="conversion" value="rotaciones">
+                                        <label class="form-check-label" for="conversion2">
+                                            <strong>Rotaciones de números</strong>
+                                            <br><small class="text-muted">Escribe 2, 5, 7 de forma girada</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="conversion3" name="conversion" value="omisiones">
+                                        <label class="form-check-label" for="conversion3">
+                                            <strong>Omisión de letras en palabras</strong>
+                                            <br><small class="text-muted">Escribe "casa" como "csa"</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="conversion4" name="conversion" value="sustituciones">
+                                        <label class="form-check-label" for="conversion4">
+                                            <strong>Sustitución de letras similares</strong>
+                                            <br><small class="text-muted">Confunde p/b, c/z, f/v</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 5: Síntomas Fonológicos -->
+                        <div class="paso-wizard" id="paso5" data-paso="5" style="display: none;">
+                            <div class="card-header" style="background-color: #6f42c1; color: white;">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-chat-dots"></i> Síntomas Fonológicos
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">¿Presenta problemas con segmentación fonética?</p>
+                                <div class="indicadores-lista">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="fonologico1" name="fonologico" value="palabras_incompletas">
+                                        <label class="form-check-label" for="fonologico1">
+                                            <strong>Escribe palabras incompletas</strong>
+                                            <br><small class="text-muted">Omite letras o sílabas</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="fonologico2" name="fonologico" value="adiciones">
+                                        <label class="form-check-label" for="fonologico2">
+                                            <strong>Adición de letras innecesarias</strong>
+                                            <br><small class="text-muted">Escribe "casass" en lugar de "casa"</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="fonologico3" name="fonologico" value="union_palabras">
+                                        <label class="form-check-label" for="fonologico3">
+                                            <strong>Unión de palabras</strong>
+                                            <br><small class="text-muted">Escribe "lacase" por "la casa"</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="fonologico4" name="fonologico" value="segmentacion_incorrecta">
+                                        <label class="form-check-label" for="fonologico4">
+                                            <strong>Segmentación incorrecta de oraciones</strong>
+                                            <br><small class="text-muted">No respeta espacios entre palabras</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 6: Severidad Percibida -->
+                        <div class="paso-wizard" id="paso6" data-paso="6" style="display: none;">
+                            <div class="card-header" style="background-color: #fd7e14; color: white;">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-exclamation-triangle"></i> Severidad Percibida
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">¿Cuál es tu percepción de la severidad?</p>
+                                <div class="escala-severidad">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="severidad" id="severidad1" value="leve">
+                                        <label class="form-check-label" for="severidad1">
+                                            <strong class="text-success">Leve</strong>
+                                            <br><small class="text-muted">Ocasionales errores, no interfiere mucho en el aprendizaje</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="severidad" id="severidad2" value="moderada">
+                                        <label class="form-check-label" for="severidad2">
+                                            <strong class="text-warning">Moderada</strong>
+                                            <br><small class="text-muted">Errores frecuentes, requiere intervención</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="severidad" id="severidad3" value="severa">
+                                        <label class="form-check-label" for="severidad3">
+                                            <strong class="text-danger">Severa</strong>
+                                            <br><small class="text-muted">Errores muy frecuentes, interfiere significativamente</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>Nota:</strong> Esta evaluación orienta al docente. 
+                                    Se recomienda derivación a especialista para diagnóstico profesional.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 7: Contexto Educativo -->
+                        <div class="paso-wizard" id="paso7" data-paso="7" style="display: none;">
+                            <div class="card-header" style="background-color: #20c997; color: white;">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-building"></i> Contexto Educativo
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">Información del entorno escolar</p>
+                                <div class="mb-3">
+                                    <label class="form-label">¿Ha recibido intervención previa?</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="intervencionPrevia" id="intervencion1" value="si">
+                                        <label class="btn btn-outline-primary" for="intervencion1">Sí</label>
+                                        <input type="radio" class="btn-check" name="intervencionPrevia" id="intervencion2" value="no">
+                                        <label class="btn btn-outline-primary" for="intervencion2">No</label>
+                                        <input type="radio" class="btn-check" name="intervencionPrevia" id="intervencion3" value="desconoce">
+                                        <label class="btn btn-outline-primary" for="intervencion3">Desconoce</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="materialIntervension">Si ha recibido intervención, ¿cuál?</label>
+                                    <textarea class="form-control" id="materialIntervension" rows="3" placeholder="Describe brevemente..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Otros trastornos observados</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="otroTrastorno1" name="otrosTrastornos" value="dislexia">
+                                        <label class="form-check-label" for="otroTrastorno1">Dislexia (dificultad en lectura)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="otroTrastorno2" name="otrosTrastornos" value="discalculia">
+                                        <label class="form-check-label" for="otroTrastorno2">Discalculia (dificultad en cálculos)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="otroTrastorno3" name="otrosTrastornos" value="tdah">
+                                        <label class="form-check-label" for="otroTrastorno3">TDAH (Déficit de atención)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 8: Historial Familiar -->
+                        <div class="paso-wizard" id="paso8" data-paso="8" style="display: none;">
+                            <div class="card-header" style="background-color: #198754; color: white;">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-people"></i> Historial Familiar
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">¿Hay antecedentes en la familia?</p>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="familiar1" name="antecedentes" value="padres">
+                                    <label class="form-check-label" for="familiar1">
+                                        <strong>Padres con disgrafía/dislexia</strong>
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="familiar2" name="antecedentes" value="hermanos">
+                                    <label class="form-check-label" for="familiar2">
+                                        <strong>Hermanos con trastornos de aprendizaje</strong>
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="familiar3" name="antecedentes" value="abuelos">
+                                    <label class="form-check-label" for="familiar3">
+                                        <strong>Abuelos u otros familiares</strong>
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="familiar4" name="antecedentes" value="ninguno">
+                                    <label class="form-check-label" for="familiar4">
+                                        <strong>No hay antecedentes conocidos</strong>
+                                    </label>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="bi bi-info-circle"></i>
+                                    Algunos tipos de disgrafía tienen componentes hereditarios.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 9: Información Adicional -->
+                        <div class="paso-wizard" id="paso9" data-paso="9" style="display: none;">
+                            <div class="card-header" style="background-color: #0dcaf0; color: white;">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-clipboard-check"></i> Información Adicional
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">Detalles complementarios</p>
+                                <div class="mb-3">
+                                    <label class="form-label">¿Hay eventos significativos en la historia?</label>
+                                    <textarea class="form-control" id="eventosSignificativos" rows="3" placeholder="Ej: Cambio de colegio, trauma, lesión..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Observaciones adicionales del docente</label>
+                                    <textarea class="form-control" id="observacionesAdicionales" rows="3" placeholder="Cualquier información relevante..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">¿Requiere derivación a especialista?</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="derivacion" id="derivacion1" value="si">
+                                        <label class="btn btn-outline-danger" for="derivacion1">Sí, urgente</label>
+                                        <input type="radio" class="btn-check" name="derivacion" id="derivacion2" value="puede_ser">
+                                        <label class="btn btn-outline-warning" for="derivacion2">Puede ser</label>
+                                        <input type="radio" class="btn-check" name="derivacion" id="derivacion3" value="no">
+                                        <label class="btn btn-outline-success" for="derivacion3">No es urgente</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 10: Resumen y Resultados -->
+                        <div class="paso-wizard" id="paso10" data-paso="10" style="display: none;">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0">
+                                    <i class="bi bi-check-circle"></i> Resultados y Recomendaciones
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="resumenResultados">
+                                    <!-- Cargado dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Navegación -->
+                        <div class="card-footer bg-light d-flex justify-content-between gap-2">
+                            <button class="btn btn-outline-secondary" id="btnAnterior" style="display: none;">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </button>
+                            <button class="btn btn-primary" id="btnSiguiente">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button class="btn btn-success" id="btnGuardar" style="display: none;">
+                                <i class="bi bi-download"></i> Guardar Diagnóstico
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toastNotificacion" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMensaje"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js"></script>
+    <script src="../../firebase/firebase-config.js"></script>
+    <script src="../../js/auth-handler.js"></script>
+    <script src="diagnostico.js"></script>
+</body>
+</html>
