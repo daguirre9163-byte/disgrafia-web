@@ -196,6 +196,31 @@ async function editarEstudiante(id) {
 
 async function initEstudiantes() {
   await cargarCursos();
+
+  const btnNuevo = document.getElementById("btnNuevoEstudiante");
+
+if (btnNuevo) {
+
+    if (cursos.length === 0) {
+
+        btnNuevo.disabled = true;
+
+        btnNuevo.title =
+            "Primero debe crear un curso.";
+
+    } else {
+
+        btnNuevo.addEventListener("click", () => {
+
+            limpiarFormulario();
+
+            getModal().show();
+
+        });
+
+    }
+
+}
   
   document.getElementById("filtroEstudiante")?.addEventListener("input", renderizarTabla);
   document.getElementById("filtroNivel")?.addEventListener("change", renderizarTabla);
