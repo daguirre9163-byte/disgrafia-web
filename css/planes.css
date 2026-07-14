@@ -1,0 +1,873 @@
+/* ==========================================
+   ESTILOS PLANES DE INTERVENCIÓN
+   ========================================== */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --border-color: #dee2e6;
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+}
+
+/* ==========================================
+   TEMA OSCURO
+   ========================================== */
+
+[data-bs-theme="dark"] {
+    --primary-color: #0d6efd;
+    --light-color: #343a40;
+    --dark-color: #f8f9fa;
+    --border-color: #495057;
+}
+
+/* ==========================================
+   BODY Y CONTENEDOR GENERAL
+   ========================================== */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    transition: var(--transition);
+}
+
+[data-bs-theme="dark"] body {
+    background-color: #1a1d21;
+    color: var(--dark-color);
+}
+
+#app {
+    min-height: 100vh;
+}
+
+/* ==========================================
+   NAVBAR
+   ========================================== */
+
+.navbar {
+    box-shadow: var(--shadow-md);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+}
+
+.navbar-brand i {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+}
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+
+.container-fluid {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* ==========================================
+   CARDS Y CAJAS
+   ========================================== */
+
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: #2d3139;
+    border-color: #495057;
+}
+
+.card-header {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+[data-bs-theme="dark"] .card-header {
+    border-bottom-color: #495057;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ==========================================
+   SIDEBAR - LISTA DE PLANES
+   ========================================== */
+
+#listaPlanes {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+#listaPlanes::-webkit-scrollbar {
+    width: 6px;
+}
+
+#listaPlanes::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+#listaPlanes::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 3px;
+}
+
+#listaPlanes::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-color);
+}
+
+.list-group-item {
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .list-group-item {
+    background-color: #2d3139;
+    border-color: #495057;
+    color: var(--dark-color);
+}
+
+.list-group-item:hover {
+    background-color: #e7f1ff;
+    transform: translateX(5px);
+}
+
+[data-bs-theme="dark"] .list-group-item:hover {
+    background-color: #3d4148;
+}
+
+.list-group-item.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.list-group-item h6 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+
+.form-select,
+.form-control {
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .form-select,
+[data-bs-theme="dark"] .form-control {
+    background-color: #2d3139;
+    border-color: #495057;
+    color: var(--dark-color);
+}
+
+.form-select:focus,
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* ==========================================
+   SECCIÓN BIENVENIDA
+   ========================================== */
+
+#seccionBienvenida {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+#seccionBienvenida .card-body {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+#seccionBienvenida i {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#seccionBienvenida .alert {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+/* ==========================================
+   ENCABEZADO DEL PLAN
+   ========================================== */
+
+#detallePlan .card-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    padding: 1.25rem;
+}
+
+#detallePlan .card-header h4 {
+    margin: 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#detallePlan .card-header i {
+    font-size: 1.5rem;
+}
+
+.btn-group .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: white;
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.badge.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+.badge.bg-motriz {
+    background-color: #0d6efd !important;
+}
+
+.badge.bg-espacial {
+    background-color: #0dcaf0 !important;
+}
+
+.badge.bg-dislexica {
+    background-color: #6f42c1 !important;
+}
+
+.badge.bg-fonologica {
+    background-color: #fd7e14 !important;
+}
+
+/* ==========================================
+   OBJETIVOS
+   ========================================== */
+
+.card-header.bg-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0bb5d4 100%) !important;
+}
+
+#listaObjetivos .card {
+    border-left: 4px solid var(--info-color);
+    margin-bottom: 1rem;
+}
+
+#listaObjetivos .card-body {
+    padding: 1rem;
+}
+
+#listaObjetivos h6 {
+    color: var(--info-color);
+    font-weight: 700;
+}
+
+#listaObjetivos small strong {
+    color: var(--dark-color);
+}
+
+/* ==========================================
+   ACTIVIDADES Y DRAG & DROP
+   ========================================== */
+
+.card-header.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+}
+
+#listaActividades {
+    padding: 0.5rem 0;
+}
+
+.actividad-item {
+    cursor: move;
+    border-left: 4px solid var(--warning-color);
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.actividad-item:hover {
+    box-shadow: 0 0.5rem 1.5rem rgba(255, 193, 7, 0.3);
+    transform: translateX(4px);
+}
+
+.actividad-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+[data-bs-theme="dark"] .actividad-item.dragging {
+    opacity: 0.5;
+}
+
+.actividad-item .bi-grip-vertical {
+    cursor: grab;
+    transition: var(--transition);
+}
+
+.actividad-item:hover .bi-grip-vertical {
+    color: var(--warning-color) !important;
+}
+
+.actividad-item .bi-grip-vertical:active {
+    cursor: grabbing;
+}
+
+.actividad-item .card-body {
+    padding: 1rem;
+}
+
+/* ==========================================
+   SEGUIMIENTO Y PROGRESO
+   ========================================== */
+
+.card-header.bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+}
+
+.progress {
+    height: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--light-color);
+}
+
+[data-bs-theme="dark"] .progress {
+    background-color: #2d3139;
+}
+
+.progress-bar {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+}
+
+.alert-light {
+    border-color: var(--border-color);
+}
+
+[data-bs-theme="dark"] .alert-light {
+    background-color: #2d3139;
+    border-color: #495057;
+    color: var(--dark-color);
+}
+
+.alert-light.border-start.border-info {
+    border-left-color: var(--info-color) !important;
+}
+
+/* ==========================================
+   NOTAS Y OBSERVACIONES
+   ========================================== */
+
+.card-header.bg-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}
+
+#notasPlan {
+    border-radius: 0.5rem;
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+    transform: translateY(-2px);
+}
+
+.btn-info {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #0bb5d4;
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #ffb300;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.btn-outline-light {
+    color: white;
+    border: 1px solid white;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: white;
+}
+
+.btn-outline-dark {
+    color: var(--dark-color);
+    border: 1px solid var(--dark-color);
+}
+
+[data-bs-theme="dark"] .btn-outline-dark {
+    color: var(--dark-color);
+    border-color: var(--dark-color);
+}
+
+.btn-outline-dark:hover {
+    background-color: var(--dark-color);
+    color: white;
+}
+
+.btn-group {
+    gap: 0.5rem;
+}
+
+.btn-group .btn {
+    margin: 0;
+}
+
+/* ==========================================
+   MODALES
+   ========================================== */
+
+.modal-header {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .modal-header {
+    border-bottom-color: #495057;
+}
+
+.modal-header.bg-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+}
+
+.modal-header.bg-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0bb5d4 100%) !important;
+}
+
+.modal-header.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+}
+
+.modal-content {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+[data-bs-theme="dark"] .modal-content {
+    background-color: #2d3139;
+    border-color: #495057;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+/* ==========================================
+   TOAST NOTIFICACIONES
+   ========================================== */
+
+.toast {
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-md);
+    border: none;
+}
+
+.toast.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.toast.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+.toast.bg-warning {
+    background-color: var(--warning-color) !important;
+    color: #212529;
+}
+
+.toast.bg-info {
+    background-color: var(--info-color) !important;
+}
+
+.toast-header {
+    background-color: transparent;
+    border: none;
+    padding: 1rem;
+}
+
+.toast-body {
+    padding: 0 1rem 1rem 1rem;
+    color: white;
+}
+
+[data-bs-theme="dark"] .toast-body {
+    color: white;
+}
+
+/* ==========================================
+   SPINNER DE CARGA
+   ========================================== */
+
+.spinner-border {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 991px) {
+    .container-fluid {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .card {
+        margin-bottom: 1.5rem;
+    }
+
+    #listaPlanes {
+        max-height: none;
+        margin-bottom: 2rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .modal-lg {
+        max-width: 90vw;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+    }
+
+    .card-header h4,
+    .card-header h5 {
+        font-size: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .btn-group {
+        gap: 0.25rem;
+    }
+
+    #detallePlan .card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    #detallePlan .card-header .btn-group {
+        width: 100%;
+    }
+
+    #detallePlan .card-header .btn-group .btn {
+        flex: 1;
+    }
+
+    .row > [class^="col-"] {
+        margin-bottom: 1rem;
+    }
+
+    .progress {
+        height: 1.25rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* ==========================================
+   ANIMACIONES
+   ========================================== */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: slideIn 0.3s ease-out;
+}
+
+.list-group-item {
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-backdrop {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+
+.text-muted {
+    color: var(--secondary-color) !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.ms-auto {
+    margin-left: auto;
+}
+
+.me-2 {
+    margin-right: 0.5rem;
+}
+
+.p-3 {
+    padding: 1rem;
+}
+
+.text-end {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.border-top {
+    border-top: 1px solid var(--border-color);
+}
+
+.border-bottom {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.visually-hidden {
+    display: none;
+}
+
+/* ==========================================
+   SCROLL PERSONALIZADO
+   ========================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-color);
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+    background: #2d3139;
+}
+
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #495057;
+}
