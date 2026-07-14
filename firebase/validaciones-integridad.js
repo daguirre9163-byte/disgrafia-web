@@ -129,7 +129,7 @@ export async function validarIntegridad(cursoId, paraleloId) {
     if (paralelo.cursoId !== cursoId) {
         return {
             valido: false,
-            mensaje: "El paralelo seleccionado no pertenece al curso indicado.",
+            mensaje: `El paralelo seleccionado pertenece al curso '${paralelo.cursoId}', no al curso '${cursoId}' indicado.`,
             curso,
             paralelo
         };

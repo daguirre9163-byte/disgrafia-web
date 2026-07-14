@@ -377,9 +377,11 @@ export async function crearEstudiante(datos) {
         throw new Error("Debe seleccionar un paralelo.");
     }
 
-    const curso = await asegurarCursoExiste(datos.cursoId);
-    await asegurarParaleloValido(datos.cursoId, datos.paraleloId);
-    await asegurarCedulaDisponible(datos?.cedula);
+    const [curso] = await Promise.all([
+        asegurarCursoExiste(datos.cursoId),
+        asegurarParaleloValido(datos.cursoId, datos.paraleloId),
+        asegurarCedulaDisponible(datos?.cedula)
+    ]);
 
     const referencia = await addDoc(collection(db, COLECCIONES.ESTUDIANTES), {
         ...construirCamposAuditoria({
@@ -416,6 +418,9 @@ export async function actualizarEstudiante(id, datos) {
     const previo = desdeDocumento(actual);
     const cursoId = datos?.cursoId || previo.cursoId;
     const paraleloId = datos?.paraleloId || previo.paraleloId;
+    const cedulaFinal = Object.prototype.hasOwnProperty.call(datos || {}, "cedula")
+        ? datos.cedula
+        : previo?.cedula;
 
     if (!cursoId || !paraleloId) {
         throw new Error("El estudiante debe conservar curso y paralelo.");
@@ -423,13 +428,14 @@ export async function actualizarEstudiante(id, datos) {
 
     const curso = await asegurarCursoExiste(cursoId);
     await asegurarParaleloValido(cursoId, paraleloId);
-    await asegurarCedulaDisponible(datos?.cedula || previo?.cedula, id);
+    await asegurarCedulaDisponible(cedulaFinal, id);
 
     await updateDoc(doc(db, COLECCIONES.ESTUDIANTES, id), {
         ...sinUndefined({
             ...datos,
             cursoId,
             paraleloId,
+            cedula: cedulaFinal,
             nivel: datos?.nivel || previo?.nivel || curso?.nivel || ""
         }),
         updatedAt: serverTimestamp(),
