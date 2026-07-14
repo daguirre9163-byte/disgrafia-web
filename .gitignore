@@ -1,10 +1,13 @@
 # Node modules
 node_modules/
 npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
 
 # Firebase
-.firebaserc
 firebase-debug.log
+.firebase/
 
 # Editor
 .vscode/
@@ -12,18 +15,52 @@ firebase-debug.log
 *.swp
 *.swo
 *~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
 
 # OS
-.DS_Store
 Thumbs.db
+.DS_Store
 
 # Environment
 .env
 .env.local
+.env.*.local
 
 # Build
 dist/
 build/
+*.map
 
 # Logs
+logs/
 *.log
+
+# Testing
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.eslintcache
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+*.temp
+
+# Config local (credenciales sensibles)
+config/firebase-config.local.js
+config/secrets.json
+
+# IDE específicos
+.atom/
+.idea/
+*.sublime-workspace
+
+# Otros
+README_DEV.md
