@@ -1,0 +1,687 @@
+/* ==========================================
+   ASISTENTE DE DIAGNÓSTICO - ESTILOS CSS
+   ========================================== */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* ==========================================
+   TEMA OSCURO
+   ========================================== */
+
+[data-bs-theme="dark"] {
+    --bs-body-bg: #1a1a1a;
+    --bs-body-color: #e0e0e0;
+    --bs-border-color: #333;
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: #2a2a2a;
+    border-color: #333;
+}
+
+[data-bs-theme="dark"] .card-header {
+    border-color: #333 !important;
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #3a3a3a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    background-color: #3a3a3a;
+    border-color: var(--primary-color);
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .form-check-input {
+    background-color: #3a3a3a;
+    border-color: #555;
+}
+
+[data-bs-theme="dark"] .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* ==========================================
+   LAYOUT PRINCIPAL
+   ========================================== */
+
+#app {
+    min-height: 100vh;
+    background-color: var(--light-color);
+    transition: var(--transition);
+}
+
+[data-bs-theme="dark"] #app {
+    background-color: #0a0a0a;
+}
+
+/* ==========================================
+   NAVBAR
+   ========================================== */
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+}
+
+/* ==========================================
+   BARRA DE PROGRESO
+   ========================================== */
+
+.progreso-container {
+    margin-bottom: 20px;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #0d6efd 0%, #0dcaf0 100%);
+    transition: width 0.6s ease;
+}
+
+[data-bs-theme="dark"] .progress {
+    background-color: #333;
+}
+
+/* ==========================================
+   WIZARD CONTAINER
+   ========================================== */
+
+.wizard-container {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.paso-wizard {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   CARD HEADERS
+   ========================================== */
+
+.card-header {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-header h4 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header h4 i {
+    font-size: 1.25rem;
+}
+
+/* ==========================================
+   CARD BODY
+   ========================================== */
+
+.card-body {
+    padding: 30px;
+}
+
+[data-bs-theme="dark"] .card-body {
+    background-color: #2a2a2a;
+}
+
+/* ==========================================
+   FORMULARIOS
+   ========================================== */
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 10px;
+}
+
+[data-bs-theme="dark"] .form-label {
+    color: #e0e0e0;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 10px 12px;
+    transition: var(--transition);
+    font-size: 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    display: block;
+    margin-top: 5px;
+}
+
+/* ==========================================
+   CHECKBOXES Y RADIO BUTTONS
+   ========================================== */
+
+.indicadores-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-check {
+    padding: 12px 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+[data-bs-theme="dark"] .form-check {
+    background-color: #3a3a3a;
+    border-color: #444;
+}
+
+.form-check:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-label {
+    cursor: pointer;
+    margin-bottom: 0;
+    margin-left: 10px;
+}
+
+.form-check-label strong {
+    color: var(--primary-color);
+}
+
+/* ==========================================
+   ESCALAS (RADIO BUTTONS)
+   ========================================== */
+
+.escala-severidad {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.escala-severidad .form-check {
+    padding: 15px;
+}
+
+.btn-group {
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-group .btn {
+    flex: 1;
+    min-width: 100px;
+}
+
+.btn-check:checked + .btn {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* ==========================================
+   TEXTAREA
+   ========================================== */
+
+textarea.form-control {
+    resize: vertical;
+    font-family: inherit;
+    min-height: 100px;
+}
+
+/* ==========================================
+   ALERTAS
+   ========================================== */
+
+.alert {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.alert-info {
+    background-color: rgba(13, 202, 240, 0.1);
+    color: #0c63e4;
+    border-left: 4px solid var(--info-color);
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border-left: 4px solid var(--warning-color);
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #721c24;
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #155724;
+    border-left: 4px solid var(--success-color);
+}
+
+[data-bs-theme="dark"] .alert-info {
+    color: #0dcaf0;
+}
+
+[data-bs-theme="dark"] .alert-warning {
+    color: #ffc107;
+}
+
+[data-bs-theme="dark"] .alert-danger {
+    color: #dc3545;
+}
+
+[data-bs-theme="dark"] .alert-success {
+    color: #198754;
+}
+
+.alert-heading {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+
+.card-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+[data-bs-theme="dark"] .card-footer {
+    border-top-color: #333;
+    background-color: #252525;
+}
+
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+    padding: 10px 20px;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    border-color: #157347;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+}
+
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+/* ==========================================
+   RESULTADOS
+   ========================================== */
+
+.resultado-container {
+    animation: slideInUp 0.5s ease-out;
+}
+
+.resultado-container .card {
+    margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.resultado-container .card-header {
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+.resultado-container .card-body {
+    padding: 20px;
+}
+
+.resultado-container ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+.resultado-container li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   BADGES Y ETIQUETAS
+   ========================================== */
+
+.badge {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 20px;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-footer {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    .card-footer .btn {
+        width: 100%;
+    }
+
+    .form-check {
+        padding: 10px 12px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn-group .btn {
+        width: 100%;
+    }
+
+    .indicadores-lista {
+        gap: 12px;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .progreso-container {
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 10px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .card-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Previene zoom en móviles */
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .resultado-container .card-body {
+        padding: 15px;
+    }
+}
+
+/* ==========================================
+   ANIMACIONES
+   ========================================== */
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.animacion-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* ==========================================
+   ACCESIBILIDAD
+   ========================================== */
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.gap-2 {
+    gap: 15px;
+}
+
+.gap-3 {
+    gap: 20px;
+}
+
+/* ==========================================
+   ESTADOS ESPECIALES
+   ========================================== */
+
+.estado-completado {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.estado-activo {
+    border-color: var(--primary-color);
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* ==========================================
+   IMPRESIÓN
+   ========================================== */
+
+@media print {
+    .navbar,
+    .progreso-container,
+    .card-footer {
+        display: none !important;
+    }
+
+    .wizard-container {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    .card-header {
+        background-color: #f8f9fa !important;
+        color: #212529 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    body {
+        background-color: white !important;
+    }
+}
+
+/* ==========================================
+   SMOOTH SCROLLING
+   ========================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ==========================================
+   TRANSICIONES SUAVES
+   ========================================== */
+
+* {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+input,
+select,
+textarea,
+button {
+    transition: var(--transition);
+}
