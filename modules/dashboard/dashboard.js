@@ -3,8 +3,7 @@ import {
   obtenerParalelos,
   obtenerEstudiantes,
   obtenerEvaluaciones,
-  obtenerActividades,
-  obtenerRecursos
+  obtenerActividades
 } from "../../firebase/firestore.js";
 
 function destruirGrafico(nombre) {
@@ -110,7 +109,7 @@ function renderActividadReciente(actividades = []) {
   }).join("");
 }
 
-function actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, recursos }) {
+function actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones }) {
   const hoy = new Date();
   const evalMes = evaluaciones.filter((item) => {
     const segundos = item?.fecha?.seconds || item?.fechaCreacion?.seconds || item?.createdAt?.seconds;
@@ -135,21 +134,19 @@ function actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, recursos
   document.getElementById("kpiCursoTop").textContent = conteoCursos[0]?.total ? `${conteoCursos[0].nombre} (${conteoCursos[0].total})` : "-";
   document.getElementById("kpiParaleloTop").textContent = conteoParalelos[0]?.total ? `${conteoParalelos[0].nombre} (${conteoParalelos[0].total})` : "-";
   document.getElementById("kpiEvaluadosMes").textContent = String(new Set(evalMes.map((item) => item.estudianteId)).size);
-  void recursos;
 }
 
 async function initDashboard() {
   try {
-    const [estudiantes, cursos, paralelos, evaluaciones, actividades, recursos] = await Promise.all([
+    const [estudiantes, cursos, paralelos, evaluaciones, actividades] = await Promise.all([
       obtenerEstudiantes(),
       obtenerCursos(),
       obtenerParalelos(),
       obtenerEvaluaciones(),
-      obtenerActividades(),
-      obtenerRecursos().catch(() => [])
+      obtenerActividades()
     ]);
 
-    actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, actividades, recursos });
+    actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, actividades });
     renderActividadReciente(actividades);
     renderParalelos(paralelos, estudiantes, cursos);
     graficarCurso(estudiantes, cursos);

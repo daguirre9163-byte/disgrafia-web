@@ -9,6 +9,10 @@ import { registrarNotificacion } from "../../js/notificaciones.js";
 
 let data = { cursos: [], paralelos: [], estudiantes: [], evaluaciones: [] };
 
+function obtenerDiagnostico(item = {}) {
+  return item.disgrafia || item.diagnostico || "Sin definir";
+}
+
 function destruir(nombre) {
   if (window[nombre]) {
     window[nombre].destroy();
@@ -32,7 +36,7 @@ function obtenerResumenFiltrado() {
     const coincideSexo = !sexo || item.sexo === sexo;
     const coincideEstado = !estado || item.estado === estado;
     const coincideEdad = !edad || item.rangoEdad === edad;
-    const coincideDiagnostico = !diagnostico || item.disgrafia === diagnostico || item.diagnostico === diagnostico;
+    const coincideDiagnostico = !diagnostico || obtenerDiagnostico(item) === diagnostico;
 
     const fecha = item.ultimaEvaluacion ? new Date(item.ultimaEvaluacion * 1000) : null;
     const coincideDesde = !fechaDesde || (fecha && fecha >= new Date(`${fechaDesde}T00:00:00`));
@@ -58,7 +62,7 @@ function renderTabla(items = []) {
       <td>${item.paraleloNombre || "-"}</td>
       <td>${item.sexo || "-"}</td>
       <td>${item.edad ?? "-"}</td>
-      <td>${item.disgrafia || item.diagnostico || "-"}</td>
+      <td>${obtenerDiagnostico(item)}</td>
       <td>${item.promedio.toFixed(2)}</td>
       <td><span class="badge ${item.estadoReporte === "Alerta" ? "bg-danger" : "bg-success"}">${item.estadoReporte}</span></td>
     </tr>
@@ -93,7 +97,7 @@ function renderGraficos(resumen = []) {
   });
 
   const tipos = resumen.reduce((acc, item) => {
-    const tipo = item.disgrafia || item.diagnostico || "Sin definir";
+    const tipo = obtenerDiagnostico(item);
     acc[tipo] = (acc[tipo] || 0) + 1;
     return acc;
   }, {});
@@ -136,7 +140,7 @@ function exportarCSV(resumen) {
     paralelo: item.paraleloNombre || "",
     sexo: item.sexo || "",
     edad: item.edad ?? "",
-    disgrafia: item.disgrafia || item.diagnostico || "",
+    disgrafia: obtenerDiagnostico(item),
     promedio: item.promedio,
     estado: item.estadoReporte
   })));
@@ -156,7 +160,7 @@ function exportarExcel(resumen) {
     Paralelo: item.paraleloNombre || "",
     Sexo: item.sexo || "",
     Edad: item.edad ?? "",
-    Disgrafia: item.disgrafia || item.diagnostico || "",
+    Disgrafia: obtenerDiagnostico(item),
     Promedio: item.promedio,
     Estado: item.estadoReporte
   })));
