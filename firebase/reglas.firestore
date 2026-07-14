@@ -2,6 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ========================
+    // FUNCIONES AUXILIARES
+    // ========================
+    
     function estaAutenticado() {
       return request.auth != null;
     }
@@ -12,6 +16,18 @@ service cloud.firestore {
 
     function esDocente() {
       return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == "docente";
+    }
+
+    function esEspecialista() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == "especialista";
+    }
+
+    function esDirector() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == "director";
+    }
+
+    function periodoExiste(periodoId) {
+      return exists(/databases/$(database)/documents/periodos/$(periodoId));
     }
 
     function cursoExiste(cursoId) {
@@ -33,40 +49,56 @@ service cloud.firestore {
         get(/databases/$(database)/documents/estudiantes/$(estudianteId)).data.paraleloId == paraleloId;
     }
 
+    function estudiante PerteneceAPeriodo(periodoId, estudianteId) {
+      return exists(/databases/$(database)/documents/estudiantes/$(estudianteId)) &&
+        get(/databases/$(database)/documents/estudiantes/$(estudianteId)).data.periodoId == periodoId;
+    }
+
+    function cursoPertenecePeriodo(periodoId, cursoId) {
+      return exists(/databases/$(database)/documents/cursos/$(cursoId)) &&
+        get(/databases/$(database)/documents/cursos/$(cursoId)).data.periodoId == periodoId;
+    }
+
+    function diagnosticoValido(diagnosticoId) {
+      return exists(/databases/$(database)/documents/diagnosticos/$(diagnosticoId));
+    }
+
+    function planExiste(planId) {
+      return exists(/databases/$(database)/documents/planesIntervención/$(planId));
+    }
+
+    // ========================
+    // USUARIOS
+    // ========================
     match /usuarios/{uid} {
       allow read, write: if estaAutenticado() && (request.auth.uid == uid || esAdmin());
     }
 
-    match /estudiantes/{estudianteId} {
-      allow read: if estaAutenticado() && (
-        esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid)
-      );
-
-      allow create, update: if estaAutenticado() && (
-        esAdmin() ||
-        (esDocente() && request.resource.data.docenteId == request.auth.uid)
-      ) &&
-      request.resource.data.cursoId is string &&
-      request.resource.data.paraleloId is string &&
-      cursoExiste(request.resource.data.cursoId) &&
-      paraleloPerteneceACurso(request.resource.data.cursoId, request.resource.data.paraleloId);
-
-      allow delete: if estaAutenticado() && (
-        esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid)
-      );
+    // ========================
+    // PERIODOS LECTIVOS (NUEVO)
+    // ========================
+    match /periodos/{periodoId} {
+      allow read: if estaAutenticado();
+      allow create, update: if estaAutenticado() && esAdmin();
+      allow delete: if estaAutenticado() && esAdmin();
     }
 
+    // ========================
+    // CURSOS
+    // ========================
     match /cursos/{cursoId} {
       allow read: if estaAutenticado() && (
         esAdmin() ||
+        esDirector() ||
         (esDocente() && resource.data.docenteId == request.auth.uid)
       );
 
       allow create, update: if estaAutenticado() && (
         esAdmin() ||
         (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      ) && (
+        !request.resource.data.keys().hasAll(['periodoId']) ||
+        periodoExiste(request.resource.data.periodoId)
       );
 
       allow delete: if estaAutenticado() && (
@@ -75,9 +107,13 @@ service cloud.firestore {
       );
     }
 
+    // ========================
+    // PARALELOS
+    // ========================
     match /paralelos/{paraleloId} {
       allow read: if estaAutenticado() && (
         esAdmin() ||
+        esDirector() ||
         (esDocente() && resource.data.docenteId == request.auth.uid)
       );
 
@@ -94,15 +130,49 @@ service cloud.firestore {
       );
     }
 
+    // ========================
+    // ESTUDIANTES
+    // ========================
+    match /estudiantes/{estudianteId} {
+      allow read: if estaAutenticado() && (
+        esAdmin() ||
+        esDirector() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      ) &&
+      request.resource.data.cursoId is string &&
+      request.resource.data.paraleloId is string &&
+      request.resource.data.periodoId is string &&
+      periodoExiste(request.resource.data.periodoId) &&
+      cursoExiste(request.resource.data.cursoId) &&
+      paraleloPerteneceACurso(request.resource.data.cursoId, request.resource.data.paraleloId);
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+    }
+
+    // ========================
+    // EVALUACIONES
+    // ========================
     match /evaluaciones/{evaluacionId} {
       allow read: if estaAutenticado() && (
         esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid)
+        esDirector() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && resource.data.docenteId == request.auth.uid)
       );
 
       allow create: if estaAutenticado() && (
         esAdmin() ||
-        (esDocente() && request.resource.data.docenteId == request.auth.uid)
+        (esDocente() && request.resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && request.resource.data.docenteId == request.auth.uid)
       ) &&
       request.resource.data.estudianteId is string &&
       request.resource.data.cursoId is string &&
@@ -113,7 +183,8 @@ service cloud.firestore {
 
       allow update: if estaAutenticado() && (
         esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid)
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && resource.data.docenteId == request.auth.uid)
       );
 
       allow delete: if estaAutenticado() && (
@@ -122,9 +193,67 @@ service cloud.firestore {
       );
     }
 
+    // ========================
+    // DIAGNÓSTICOS (NUEVO)
+    // ========================
+    match /diagnosticos/{diagnosticoId} {
+      allow read: if estaAutenticado() && (
+        esAdmin() ||
+        esDirector() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && request.resource.data.docenteId == request.auth.uid)
+      ) &&
+      request.resource.data.estudianteId is string &&
+      exists(/databases/$(database)/documents/estudiantes/$(request.resource.data.estudianteId));
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        esEspecialista()
+      );
+    }
+
+    // ========================
+    // PLANES DE INTERVENCIÓN (NUEVO)
+    // ========================
+    match /planesIntervención/{planId} {
+      allow read: if estaAutenticado() && (
+        esAdmin() ||
+        esDirector() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && request.resource.data.docenteId == request.auth.uid)
+      ) &&
+      request.resource.data.estudianteId is string &&
+      exists(/databases/$(database)/documents/estudiantes/$(request.resource.data.estudianteId)) &&
+      (
+        !request.resource.data.keys().hasAll(['diagnosticoId']) ||
+        diagnosticoValido(request.resource.data.diagnosticoId)
+      );
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+    }
+
+    // ========================
+    // ACTIVIDADES
+    // ========================
     match /actividades/{actividadId} {
       allow read: if estaAutenticado() && (
         esAdmin() ||
+        esDirector() ||
         (esDocente() && resource.data.docenteId == request.auth.uid)
       );
 
@@ -132,10 +261,14 @@ service cloud.firestore {
         esAdmin() ||
         (esDocente() && request.resource.data.docenteId == request.auth.uid)
       ) &&
-      request.resource.data.cursoId is string &&
-      request.resource.data.paraleloId is string &&
-      cursoExiste(request.resource.data.cursoId) &&
-      paraleloPerteneceACurso(request.resource.data.cursoId, request.resource.data.paraleloId) &&
+      (
+        !request.resource.data.keys().hasAll(['cursoId']) ||
+        cursoExiste(request.resource.data.cursoId)
+      ) &&
+      (
+        !request.resource.data.keys().hasAll(['paraleloId']) ||
+        paraleloPerteneceACurso(request.resource.data.cursoId, request.resource.data.paraleloId)
+      ) &&
       (
         !request.resource.data.keys().hasAll(['estudianteId']) ||
         request.resource.data.estudianteId == null ||
@@ -153,14 +286,86 @@ service cloud.firestore {
       );
     }
 
+    // ========================
+    // RECURSOS
+    // ========================
     match /recursos/{recursoId} {
       allow read: if estaAutenticado();
+      
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      );
+      
+      allow delete: if estaAutenticado() && esAdmin();
+    }
+
+    // ========================
+    // GUÍAS
+    // ========================
+    match /guias/{guiaId} {
+      allow read: if estaAutenticado();
+      
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      );
+      
+      allow delete: if estaAutenticado() && esAdmin();
+    }
+
+    // ========================
+    // BIBLIOTECA (NUEVO)
+    // ========================
+    match /biblioteca/{articuloId} {
+      allow read: if estaAutenticado();
+      
       allow create, update, delete: if estaAutenticado() && esAdmin();
     }
 
-    match /guias/{guiaId} {
-      allow read: if estaAutenticado();
-      allow create, update, delete: if estaAutenticado() && esAdmin();
+    // ========================
+    // SEGUIMIENTO (NUEVO)
+    // ========================
+    match /seguimiento/{registroId} {
+      allow read: if estaAutenticado() && (
+        esAdmin() ||
+        esDirector() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid) ||
+        (esEspecialista() && request.resource.data.docenteId == request.auth.uid)
+      ) &&
+      request.resource.data.estudianteId is string &&
+      exists(/databases/$(database)/documents/estudiantes/$(request.resource.data.estudianteId));
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+    }
+
+    // ========================
+    // NOTIFICACIONES
+    // ========================
+    match /notificaciones/{notificacionId} {
+      allow read, update: if estaAutenticado() && request.auth.uid == resource.data.docenteId;
+      
+      allow create: if estaAutenticado();
+      
+      allow delete: if estaAutenticado() && request.auth.uid == resource.data.docenteId;
+    }
+
+    // ========================
+    // ANALYTICS
+    // ========================
+    match /analytics/{eventoId} {
+      allow read: if estaAutenticado() && esAdmin();
+      
+      allow create: if estaAutenticado();
     }
   }
 }
