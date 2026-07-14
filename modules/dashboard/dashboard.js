@@ -1,10 +1,11 @@
-import { obtenerCursos, obtenerEstudiantes, obtenerEvaluaciones, obtenerActividades, obtenerRecursos } from "../../firebase/firestore.js";
-
-function promedio(lista = []) {
-  if (!lista.length) return 0;
-  const total = lista.reduce((acc, item) => acc + Number(item.calificacion || 0), 0);
-  return Number((total / lista.length).toFixed(2));
-}
+import {
+  obtenerCursos,
+  obtenerParalelos,
+  obtenerEstudiantes,
+  obtenerEvaluaciones,
+  obtenerActividades,
+  obtenerRecursos
+} from "../../firebase/firestore.js";
 
 function destruirGrafico(nombre) {
   if (window[nombre]) {
@@ -12,95 +13,84 @@ function destruirGrafico(nombre) {
   }
 }
 
-function porMes(evaluaciones = []) {
-  const mapa = {};
-  evaluaciones.forEach((item) => {
-    const segundos = item?.fecha?.seconds || item?.fechaCreacion?.seconds;
-    if (!segundos) return;
-    const fecha = new Date(segundos * 1000);
-    const llave = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
-    mapa[llave] = mapa[llave] || [];
-    mapa[llave].push(Number(item.calificacion || 0));
-  });
+function graficarCurso(estudiantes = [], cursos = []) {
+  const canvas = document.getElementById("chartCursos");
+  if (!canvas || typeof Chart === "undefined") return;
 
-  const labels = Object.keys(mapa).sort();
-  return { labels, data: labels.map((mes) => promedio(mapa[mes].map((calificacion) => ({ calificacion })))) };
+  const conteo = cursos.map((curso) => ({
+    nombre: curso.nombre || "Curso",
+    total: estudiantes.filter((estudiante) => estudiante.cursoId === curso.id).length
+  }));
+
+  destruirGrafico("chartCursosRef");
+  window.chartCursosRef = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: conteo.map((item) => item.nombre),
+      datasets: [{ label: "Estudiantes", data: conteo.map((item) => item.total), backgroundColor: "#0d6efd" }]
+    },
+    options: { responsive: true }
+  });
 }
 
-function graficarDistribucionDisgrafia(estudiantes = []) {
-  const canvas = document.getElementById("chartDisgrafia");
+function graficarSexo(estudiantes = []) {
+  const canvas = document.getElementById("chartSexo");
   if (!canvas || typeof Chart === "undefined") return;
 
   const conteo = estudiantes.reduce((acc, estudiante) => {
-    const tipo = estudiante.disgrafia || estudiante.tiposDisgrafia?.[0] || "Sin definir";
+    const sexo = estudiante.sexo || "Sin dato";
+    acc[sexo] = (acc[sexo] || 0) + 1;
+    return acc;
+  }, {});
+
+  destruirGrafico("chartSexoRef");
+  window.chartSexoRef = new Chart(canvas, {
+    type: "pie",
+    data: { labels: Object.keys(conteo), datasets: [{ data: Object.values(conteo) }] }
+  });
+}
+
+function graficarDiagnostico(estudiantes = []) {
+  const canvas = document.getElementById("chartDiagnostico");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const conteo = estudiantes.reduce((acc, estudiante) => {
+    const tipo = estudiante.disgrafia || estudiante.diagnostico || "Sin definir";
     acc[tipo] = (acc[tipo] || 0) + 1;
     return acc;
   }, {});
 
-  destruirGrafico("chartDisgrafiaRef");
-  window.chartDisgrafiaRef = new Chart(canvas, {
+  destruirGrafico("chartDiagnosticoRef");
+  window.chartDiagnosticoRef = new Chart(canvas, {
     type: "doughnut",
     data: { labels: Object.keys(conteo), datasets: [{ data: Object.values(conteo) }] }
   });
 }
 
-function graficarProgresoMes(evaluaciones = []) {
-  const canvas = document.getElementById("chartProgresoMes");
-  if (!canvas || typeof Chart === "undefined") return;
-
-  const info = porMes(evaluaciones);
-  destruirGrafico("chartProgresoMesRef");
-  window.chartProgresoMesRef = new Chart(canvas, {
-    type: "line",
-    data: { labels: info.labels, datasets: [{ label: "Promedio", data: info.data, borderColor: "#0d6efd", fill: false }] }
-  });
-}
-
-function graficarComparativa(evaluaciones = []) {
-  const canvas = document.getElementById("chartComparativa");
-  if (!canvas || typeof Chart === "undefined") return;
-
-  const info = porMes(evaluaciones);
-  const actual = info.data[info.data.length - 1] || 0;
-  const anterior = info.data[info.data.length - 2] || 0;
-
-  destruirGrafico("chartComparativaRef");
-  window.chartComparativaRef = new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels: ["Mes anterior", "Mes actual"],
-      datasets: [{ label: "Promedio", data: [anterior, actual], backgroundColor: ["#6c757d", "#198754"] }]
-    }
-  });
-}
-
-function renderHeatmap(estudiantes = [], actividades = []) {
+function renderParalelos(paralelos = [], estudiantes = [], cursos = []) {
   const contenedor = document.getElementById("heatmapActividades");
   if (!contenedor) return;
 
-  if (!estudiantes.length) {
-    contenedor.innerHTML = '<p class="text-muted">Sin estudiantes.</p>';
+  if (!paralelos.length) {
+    contenedor.innerHTML = '<p class="text-muted">Sin paralelos registrados.</p>';
     return;
   }
 
-  const filas = estudiantes.slice(0, 8).map((estudiante) => {
-    const total = actividades.filter((actividad) => !actividad.estudianteId || actividad.estudianteId === estudiante.id).length || 1;
-    const completadas = actividades.filter((actividad) => (actividad.estudianteId === estudiante.id || !actividad.estudianteId) && Number(actividad.progreso || 0) >= 100).length;
-    const porcentaje = Math.round((completadas / total) * 100);
+  const filas = paralelos.map((paralelo) => {
+    const curso = cursos.find((item) => item.id === paralelo.cursoId);
+    const total = estudiantes.filter((estudiante) => estudiante.paraleloId === paralelo.id).length;
+
     return `<tr>
-      <td>${estudiante.nombre || "-"}</td>
-      <td>${completadas}/${total}</td>
-      <td>
-        <div class="progress" style="height: 22px;">
-          <div class="progress-bar ${porcentaje < 50 ? "bg-danger" : "bg-success"}" style="width:${porcentaje}%">${porcentaje}%</div>
-        </div>
-      </td>
+      <td>${paralelo.nombre || "-"}</td>
+      <td>${curso?.nombre || "Sin curso"}</td>
+      <td>${total}</td>
+      <td><span class="badge ${paralelo.estado === "inactivo" ? "bg-secondary" : "bg-success"}">${paralelo.estado || "activo"}</span></td>
     </tr>`;
   }).join("");
 
   contenedor.innerHTML = `
     <table class="table table-sm table-advanced mb-0">
-      <thead><tr><th>Estudiante</th><th>Completadas</th><th>Heatmap</th></tr></thead>
+      <thead><tr><th>Paralelo</th><th>Curso</th><th>Estudiantes</th><th>Estado</th></tr></thead>
       <tbody>${filas}</tbody>
     </table>
   `;
@@ -120,64 +110,51 @@ function renderActividadReciente(actividades = []) {
   }).join("");
 }
 
-function actualizarKPIs({ estudiantes, evaluaciones, actividades, recursos }) {
+function actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, recursos }) {
   const hoy = new Date();
   const evalMes = evaluaciones.filter((item) => {
-    const segundos = item?.fecha?.seconds || item?.fechaCreacion?.seconds;
+    const segundos = item?.fecha?.seconds || item?.fechaCreacion?.seconds || item?.createdAt?.seconds;
     if (!segundos) return false;
     const fecha = new Date(segundos * 1000);
     return fecha.getMonth() === hoy.getMonth() && fecha.getFullYear() === hoy.getFullYear();
   });
 
-  const promedioGeneral = promedio(evaluaciones);
-  const infoMes = porMes(evaluaciones);
-  const mesActual = infoMes.data[infoMes.data.length - 1] || 0;
-  const mesAnterior = infoMes.data[infoMes.data.length - 2] || 0;
-  const tendencia = mesAnterior ? (((mesActual - mesAnterior) / mesAnterior) * 100) : 0;
+  const conteoCursos = cursos.map((curso) => ({
+    nombre: curso.nombre || "Curso",
+    total: estudiantes.filter((estudiante) => estudiante.cursoId === curso.id).length
+  })).sort((a, b) => b.total - a.total);
 
-  const alerta = estudiantes.filter((estudiante) => {
-    const estEval = evaluaciones.filter((evaluacion) => evaluacion.estudianteId === estudiante.id);
-    return promedio(estEval) < 5 && estEval.length;
-  }).length;
+  const conteoParalelos = paralelos.map((paralelo) => ({
+    nombre: `${paralelo.nombre || "Paralelo"} · ${(cursos.find((curso) => curso.id === paralelo.cursoId)?.nombre || "Sin curso")}`,
+    total: estudiantes.filter((estudiante) => estudiante.paraleloId === paralelo.id).length
+  })).sort((a, b) => b.total - a.total);
 
-  const mejora = estudiantes.filter((estudiante) => {
-    const estEval = evaluaciones.filter((evaluacion) => evaluacion.estudianteId === estudiante.id);
-    if (estEval.length < 2) return false;
-    const ordenadas = [...estEval].sort((a, b) => (a?.fecha?.seconds || 0) - (b?.fecha?.seconds || 0));
-    const inicio = Number(ordenadas[0].calificacion || 0);
-    const fin = Number(ordenadas[ordenadas.length - 1].calificacion || 0);
-    return inicio > 0 && ((fin - inicio) / inicio) * 100 >= 15;
-  }).length;
-
-  const cumplimiento = actividades.length
-    ? Math.round((actividades.filter((item) => Number(item.progreso || 0) >= 100).length / actividades.length) * 100)
-    : 0;
-
+  document.getElementById("kpiTotalCursos").textContent = String(cursos.length);
+  document.getElementById("kpiTotalParalelos").textContent = String(paralelos.length);
+  document.getElementById("kpiTotalEstudiantes").textContent = String(estudiantes.length);
+  document.getElementById("kpiCursoTop").textContent = conteoCursos[0]?.total ? `${conteoCursos[0].nombre} (${conteoCursos[0].total})` : "-";
+  document.getElementById("kpiParaleloTop").textContent = conteoParalelos[0]?.total ? `${conteoParalelos[0].nombre} (${conteoParalelos[0].total})` : "-";
   document.getElementById("kpiEvaluadosMes").textContent = String(new Set(evalMes.map((item) => item.estudianteId)).size);
-  document.getElementById("kpiPromedioGeneral").textContent = String(promedioGeneral);
-  document.getElementById("kpiTendencia").textContent = `${tendencia >= 0 ? "+" : ""}${tendencia.toFixed(1)}%`;
-  document.getElementById("kpiMejora").textContent = `${estudiantes.length ? Math.round((mejora / estudiantes.length) * 100) : 0}%`;
-  document.getElementById("kpiAlertas").textContent = String(alerta);
-  document.getElementById("kpiRecursos").textContent = String(recursos.length);
-  document.getElementById("kpiCumplimiento").textContent = `${cumplimiento}%`;
+  void recursos;
 }
 
 async function initDashboard() {
   try {
-    const [estudiantes, cursos, evaluaciones, actividades, recursos] = await Promise.all([
+    const [estudiantes, cursos, paralelos, evaluaciones, actividades, recursos] = await Promise.all([
       obtenerEstudiantes(),
       obtenerCursos(),
+      obtenerParalelos(),
       obtenerEvaluaciones(),
       obtenerActividades(),
       obtenerRecursos().catch(() => [])
     ]);
 
-    actualizarKPIs({ estudiantes, cursos, evaluaciones, actividades, recursos });
+    actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, actividades, recursos });
     renderActividadReciente(actividades);
-    renderHeatmap(estudiantes, actividades);
-    graficarDistribucionDisgrafia(estudiantes);
-    graficarProgresoMes(evaluaciones);
-    graficarComparativa(evaluaciones);
+    renderParalelos(paralelos, estudiantes, cursos);
+    graficarCurso(estudiantes, cursos);
+    graficarSexo(estudiantes);
+    graficarDiagnostico(estudiantes);
   } catch (error) {
     console.error("Error cargando dashboard:", error);
   }

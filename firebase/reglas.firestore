@@ -14,31 +14,94 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == "docente";
     }
 
+    function cursoExiste(cursoId) {
+      return exists(/databases/$(database)/documents/cursos/$(cursoId));
+    }
+
+    function paraleloExiste(paraleloId) {
+      return exists(/databases/$(database)/documents/paralelos/$(paraleloId));
+    }
+
+    function paraleloPerteneceACurso(cursoId, paraleloId) {
+      return paraleloExiste(paraleloId) &&
+        get(/databases/$(database)/documents/paralelos/$(paraleloId)).data.cursoId == cursoId;
+    }
+
     match /usuarios/{uid} {
       allow read, write: if estaAutenticado() && (request.auth.uid == uid || esAdmin());
     }
 
     match /estudiantes/{estudianteId} {
-      allow read, write: if estaAutenticado() && (
+      allow read: if estaAutenticado() && (
         esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
         (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      ) &&
+      request.resource.data.cursoId is string &&
+      request.resource.data.paraleloId is string &&
+      cursoExiste(request.resource.data.cursoId) &&
+      paraleloPerteneceACurso(request.resource.data.cursoId, request.resource.data.paraleloId);
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
       );
     }
 
     match /cursos/{cursoId} {
-      allow read, write: if estaAutenticado() && (
+      allow read: if estaAutenticado() && (
         esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
         (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      );
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+    }
+
+    match /paralelos/{paraleloId} {
+      allow read: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      ) &&
+      request.resource.data.cursoId is string &&
+      cursoExiste(request.resource.data.cursoId);
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
       );
     }
 
     match /evaluaciones/{evaluacionId} {
-      allow read, write: if estaAutenticado() && (
+      allow read: if estaAutenticado() && (
         esAdmin() ||
-        (esDocente() && resource.data.docenteId == request.auth.uid) ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
+      );
+
+      allow create, update: if estaAutenticado() && (
+        esAdmin() ||
         (esDocente() && request.resource.data.docenteId == request.auth.uid)
+      );
+
+      allow delete: if estaAutenticado() && (
+        esAdmin() ||
+        (esDocente() && resource.data.docenteId == request.auth.uid)
       );
     }
 

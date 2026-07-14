@@ -1,357 +1,127 @@
 <div class="fade-in">
-
-    <!-- ENCABEZADO -->
-
-    <div class="module-header">
-
+    <div class="module-header d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-
-            <h2 class="module-title">
-
-                Gestión de Cursos
-
-            </h2>
-
-            <p class="module-subtitle">
-
-                Administra todos los cursos registrados en la plataforma.
-
-            </p>
-
+            <h2 class="module-title mb-1">Gestión de Cursos</h2>
+            <p class="module-subtitle mb-0">Cree cursos y administre sus paralelos antes de registrar estudiantes.</p>
         </div>
-
-        <button
-            class="btn btn-primary"
-            id="btnNuevoCurso">
-
+        <button class="btn btn-primary" id="btnNuevoCurso" type="button">
             <i class="bi bi-plus-circle-fill"></i>
-
             Nuevo Curso
-
         </button>
-
     </div>
-
-    <!-- DASHBOARD -->
 
     <div class="row g-4 mt-2">
-
-        <div class="col-xl-3 col-md-6">
-
+        <div class="col-xl-4 col-md-6">
             <div class="info-card">
-
                 <div>
-
                     <small>Total Cursos</small>
-
-                    <h3 id="totalCursos">
-
-                        0
-
-                    </h3>
-
+                    <h3 id="totalCursos">0</h3>
                 </div>
-
                 <i class="bi bi-book-fill"></i>
-
             </div>
-
         </div>
-
-        <div class="col-xl-3 col-md-6">
-
+        <div class="col-xl-4 col-md-6">
             <div class="info-card success">
-
                 <div>
-
-                    <small>Estudiantes</small>
-
-                    <h3 id="totalEstudiantes">
-
-                        0
-
-                    </h3>
-
+                    <small>Total Paralelos</small>
+                    <h3 id="totalParalelos">0</h3>
                 </div>
-
-                <i class="bi bi-mortarboard-fill"></i>
-
+                <i class="bi bi-diagram-3-fill"></i>
             </div>
-
         </div>
-
-        <div class="col-xl-3 col-md-6">
-
+        <div class="col-xl-4 col-md-6">
             <div class="info-card warning">
-
                 <div>
-
-                    <small>Período</small>
-
-                    <h3>
-
-                        2026-2027
-
-                    </h3>
-
+                    <small>Total Estudiantes</small>
+                    <h3 id="totalEstudiantes">0</h3>
                 </div>
-
-                <i class="bi bi-calendar-event-fill"></i>
-
+                <i class="bi bi-mortarboard-fill"></i>
             </div>
-
         </div>
-
-        <div class="col-xl-3 col-md-6">
-
-            <div class="info-card danger">
-
-                <div>
-
-                    <small>Estado</small>
-
-                    <h3>
-
-                        Activo
-
-                    </h3>
-
-                </div>
-
-                <i class="bi bi-check-circle-fill"></i>
-
-            </div>
-
-        </div>
-
     </div>
 
-    <!-- BUSCADOR -->
-
     <div class="search-container mt-4">
-
         <div class="input-group">
-
             <span class="input-group-text">
-
                 <i class="bi bi-search"></i>
-
             </span>
-
             <input
                 id="buscarCurso"
                 type="text"
                 class="form-control"
-                placeholder="Buscar curso...">
-
+                placeholder="Buscar curso por nombre o nivel">
         </div>
-
     </div>
 
-    <!-- CONTENEDOR DE TARJETAS -->
-
-<div id="contenedorCursos" class="row g-4 mt-3">
-
-    <div class="col-12">
-
-        <div id="estadoVacio" class="empty-state">
-
-            <i class="bi bi-book"></i>
-
-            <h4>Aún no tienes cursos registrados</h4>
-
-            <p>
-
-                Crea tu primer curso para comenzar a gestionar
-                estudiantes, guías metodológicas y evaluaciones.
-
-            </p>
-
-            <button
-                class="btn btn-primary"
-                id="btnCrearPrimerCurso">
-
-                <i class="bi bi-plus-circle-fill"></i>
-
-                Crear mi primer curso
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-</div>
-
-<!-- ========================================================= -->
-
-<!-- MODAL -->
-
-<div
-    class="modal fade"
-    id="modalCurso"
-    tabindex="-1">
-
-    <div class="modal-dialog modal-lg">
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h5
-                    class="modal-title">
-
-                    Curso
-
-                </h5>
-
-                <button
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-
+    <div id="contenedorCursos" class="row g-4 mt-3">
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="bi bi-book"></i>
+                <h4>Aún no tienes cursos registrados</h4>
+                <p>Crea tu primer curso y luego agrega los paralelos para habilitar el registro de estudiantes.</p>
+                <button class="btn btn-primary" id="btnCrearPrimerCurso" type="button">
+                    <i class="bi bi-plus-circle-fill"></i>
+                    Crear mi primer curso
                 </button>
-
             </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="modalCurso" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Curso</h5>
+                <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
             <div class="modal-body">
-
                 <form id="formCurso">
-
-                    <input
-                        type="hidden"
-                        id="cursoId">
-
                     <div class="row">
-
                         <div class="col-md-6 mb-3">
-
-                            <label>
-
-                                Nombre
-
-                            </label>
-
-                            <input
-                                id="nombreCurso"
-                                class="form-control"
-                                required>
-
+                            <label class="form-label" for="nombreCurso">Nombre</label>
+                            <input id="nombreCurso" class="form-control" required>
                         </div>
-
                         <div class="col-md-6 mb-3">
-
-                            <label>
-
-                                Paralelo
-
-                            </label>
-
-                            <input
-                                id="paraleloCurso"
-                                class="form-control"
-                                required>
-
+                            <label class="form-label" for="nivelCurso">Nivel</label>
+                            <select id="nivelCurso" class="form-select" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Inicial">Inicial</option>
+                                <option value="EGB">EGB</option>
+                                <option value="Bachillerato">Bachillerato</option>
+                            </select>
                         </div>
-
                     </div>
 
                     <div class="row">
-
                         <div class="col-md-6 mb-3">
-
-                            <label>
-
-                                Nivel
-
-                            </label>
-
-                            <select
-                                id="nivelCurso"
-                                class="form-select">
-
-                                <option>EGB Inicial</option>
-
-                                <option>EGB Elemental</option>
-
-                                <option>EGB Media</option>
-
-                                <option>EGB Superior</option>
-
-                                <option>Bachillerato</option>
-
+                            <label class="form-label" for="estadoCurso">Estado</label>
+                            <select id="estadoCurso" class="form-select">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
                             </select>
-
                         </div>
-
                         <div class="col-md-6 mb-3">
-
-                            <label>
-
-                                Jornada
-
-                            </label>
-
-                            <select
-                                id="jornadaCurso"
-                                class="form-select">
-
-                                <option>Matutina</option>
-
-                                <option>Vespertina</option>
-
-                                <option>Nocturna</option>
-
+                            <label class="form-label" for="jornadaCurso">Jornada</label>
+                            <select id="jornadaCurso" class="form-select">
+                                <option value="">Seleccione...</option>
+                                <option value="Matutina">Matutina</option>
+                                <option value="Vespertina">Vespertina</option>
+                                <option value="Nocturna">Nocturna</option>
                             </select>
-
                         </div>
-
                     </div>
 
                     <div class="mb-3">
-
-                        <label>
-
-                            Descripción
-
-                        </label>
-
-                        <textarea
-                            id="descripcionCurso"
-                            rows="4"
-                            class="form-control">
-
-                        </textarea>
-
+                        <label class="form-label" for="descripcionCurso">Descripción</label>
+                        <textarea id="descripcionCurso" class="form-control" rows="3" placeholder="Observaciones generales del curso"></textarea>
                     </div>
-
                 </form>
-
             </div>
-
             <div class="modal-footer">
-
-                <button
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-
-                    Cancelar
-
-                </button>
-
-                <button
-                    class="btn btn-primary"
-                    id="btnGuardarCurso">
-
-                    Guardar Curso
-
-                </button>
-
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+                <button class="btn btn-primary" id="btnGuardarCurso" type="button">Guardar</button>
             </div>
-
         </div>
-
     </div>
-
 </div>

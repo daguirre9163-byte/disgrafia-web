@@ -5,6 +5,11 @@ import {
     eliminarEstudiante
 } from "../../firebase/firestore.js";
 
+import {
+    validarIntegridad,
+    validarEliminacionCurso
+} from "../../firebase/validaciones-integridad.js";
+
 import { subirFotoEstudiante } from "../../firebase/storage.js";
 import { obtenerConCache, guardarCache } from "../../js/firestore-service.js";
 
@@ -33,4 +38,12 @@ export async function eliminarEstudianteServicio(id) {
 
 export async function subirFotoEstudianteServicio(estudianteId, archivo) {
     return subirFotoEstudiante(estudianteId, archivo);
+}
+
+export async function validarEstudianteCursoParaleloServicio(cursoId, paraleloId) {
+    return validarIntegridad(cursoId, paraleloId);
+}
+
+export async function validarDisponibilidadCursosServicio(cursoId) {
+    return validarEliminacionCurso(cursoId);
 }

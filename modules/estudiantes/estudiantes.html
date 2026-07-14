@@ -2,10 +2,10 @@
   <div class="row mb-4">
     <div class="col-md-8">
       <h2><i class="bi bi-people-fill"></i> Gestión de Estudiantes</h2>
+      <p class="text-muted mb-0">El registro académico exige Curso → Paralelo → Estudiante.</p>
     </div>
     <div class="col-md-4 text-end">
       <button id="btnNuevoEstudiante" class="btn btn-primary" type="button">
-    
         <i class="bi bi-plus-circle"></i> Nuevo Estudiante
       </button>
       <button class="btn btn-outline-secondary ms-2" id="btnVistaEstudiantes" type="button">
@@ -14,30 +14,45 @@
     </div>
   </div>
 
-  <!-- Filtros -->
+  <div id="alertaSinCursos" class="alert alert-warning d-none">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span>No existen cursos registrados. Debe crear uno antes de registrar estudiantes.</span>
+      <button class="btn btn-sm btn-outline-dark" data-module="cursos" type="button">Ir a Cursos</button>
+    </div>
+  </div>
+
+  <div id="alertaSinParalelos" class="alert alert-info d-none">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span>El curso seleccionado aún no posee paralelos.</span>
+      <button class="btn btn-sm btn-outline-primary" data-module="paralelos" type="button">Crear Paralelo</button>
+    </div>
+  </div>
+
+  <div id="advertenciaEstudiantes" class="small text-muted mb-3"></div>
+
   <div class="card mb-4 border-0 shadow-sm">
     <div class="card-body">
       <div class="row g-3">
-        <div class="col-md-6">
-          <input type="text" class="form-control" id="filtroEstudiante" placeholder="Filtrar por nombre...">
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="filtroEstudiante" placeholder="Buscar por nombre o cédula">
         </div>
-        <div class="col-md-6">
-          <select class="form-select" id="filtroNivel">
-            <option value="">-- Todos los niveles --</option>
-            <option value="inicial">Educación Inicial</option>
-            <option value="elemental">Básica Elemental</option>
-            <option value="media">Básica Media</option>
-            <option value="superior">Básica Superior</option>
-            <option value="bachillerato">Bachillerato</option>
+        <div class="col-md-3">
+          <select class="form-select" id="filtroCurso">
+            <option value="">-- Todos los cursos --</option>
           </select>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
+          <select class="form-select" id="filtroParalelo">
+            <option value="">-- Todos los paralelos --</option>
+          </select>
+        </div>
+        <div class="col-md-3">
           <select class="form-select" id="filtroDisgrafia">
-            <option value="">-- Todas las disgrafías --</option>
-            <option value="motriz">Motriz</option>
-            <option value="visuoespacial">Visuoespacial</option>
-            <option value="lingüística">Lingüística</option>
-            <option value="mixta">Mixta</option>
+            <option value="">-- Todos los diagnósticos --</option>
+            <option value="Motriz">Motriz</option>
+            <option value="Visuoespacial">Visuoespacial</option>
+            <option value="Lingüística">Lingüística</option>
+            <option value="Mixta">Mixta</option>
           </select>
         </div>
         <div class="col-md-6">
@@ -50,23 +65,24 @@
     </div>
   </div>
 
-  <!-- Tabla de Estudiantes -->
   <div class="card border-0 shadow-sm">
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>Nombre</th>
-              <th>Nivel</th>
-              <th>Tipo de Disgrafía</th>
-              <th>Evaluaciones</th>
+              <th>Estudiante</th>
+              <th>Curso</th>
+              <th>Paralelo</th>
+              <th>Sexo</th>
+              <th>Diagnóstico</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="tablaEstudiantes">
             <tr>
-              <td colspan="5" class="text-center text-muted">Cargando estudiantes...</td>
+              <td colspan="7" class="text-center text-muted">Cargando estudiantes...</td>
             </tr>
           </tbody>
         </table>
@@ -76,51 +92,95 @@
     </div>
   </div>
 
-  <!-- Modal Nuevo Estudiante -->
   <div class="modal fade" id="modalEstudiante" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Nuevo Estudiante</h5>
+          <h5 class="modal-title">Registro de Estudiante</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <form id="formEstudiante">
-            <div class="mb-3">
-              <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombreEst" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Nivel</label>
-              <select class="form-select" id="nivelEst" required>
-                <option>Educación Inicial</option>
-                <option>Básica Elemental</option>
-                <option>Básica Media</option>
-                <option>Básica Superior</option>
-                <option>Bachillerato</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Tipo de Disgrafía</label>
-              <select class="form-select" id="disgrafia" required>
-                <option>Motriz</option>
-                <option>Visuoespacial</option>
-                <option>Lingüística</option>
-                <option>Mixta</option>
-              </select>
+            <h6 class="text-primary">Datos académicos</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Curso <span class="text-danger">*</span></label>
+                <select class="form-select" id="cursoEstudiante" required>
+                  <option value="">-- Seleccione un curso --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Paralelo <span class="text-danger">*</span></label>
+                <select class="form-select" id="paraleloEstudiante" required disabled>
+                  <option value="">-- Seleccione un paralelo --</option>
+                </select>
+              </div>
             </div>
 
-            <div class="mb-3">
-    <label class="form-label">Curso <span class="text-danger">*</span></label>
+            <h6 class="text-primary">Datos personales</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <label class="form-label">Cédula</label>
+                <input type="text" class="form-control" id="cedulaEst" maxlength="10">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Nombres <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nombresEst" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Apellidos</label>
+                <input type="text" class="form-control" id="apellidosEst">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input type="date" class="form-control" id="fechaNacimientoEst">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Sexo</label>
+                <select class="form-select" id="sexoEst">
+                  <option value="">Seleccione...</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <select class="form-select" id="estadoEst">
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Representante</label>
+                <input type="text" class="form-control" id="representanteEst">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="telefonoEst" maxlength="10">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Dirección</label>
+                <textarea class="form-control" id="direccionEst" rows="2"></textarea>
+              </div>
+            </div>
 
-    <select class="form-select" id="cursoEstudiante" required>
-        <option value="">-- Seleccione un curso --</option>
-    </select>
-
-    <small class="text-muted">
-        El estudiante debe pertenecer a un curso.
-    </small>
-</div>
+            <h6 class="text-primary">Diagnóstico</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Tipo de disgrafía</label>
+                <select class="form-select" id="disgrafia">
+                  <option value="Motriz">Motriz</option>
+                  <option value="Visuoespacial">Visuoespacial</option>
+                  <option value="Lingüística">Lingüística</option>
+                  <option value="Mixta">Mixta</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Observación diagnóstica</label>
+                <input type="text" class="form-control" id="diagnosticoEst" placeholder="Detalle o comentario diagnóstico">
+              </div>
+            </div>
           </form>
         </div>
         <div class="modal-footer">

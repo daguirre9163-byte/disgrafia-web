@@ -1,39 +1,39 @@
 <div class="fade-in">
-  <div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+  <div class="dashboard-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
       <h2 class="dashboard-title">Panel de Gestión Pedagógica</h2>
-      <p class="dashboard-subtitle mb-0">KPIs en tiempo real para docentes</p>
+      <p class="dashboard-subtitle mb-0">Vista general del flujo Curso → Paralelo → Estudiante</p>
     </div>
-    <button class="btn btn-primary" data-module="estudiantes">
+    <button class="btn btn-primary" data-module="estudiantes" type="button">
       <i class="bi bi-plus-circle"></i> Nuevo Estudiante
     </button>
   </div>
 
   <div class="row g-3">
-    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-primary"><small>Evaluados este mes</small><h3 id="kpiEvaluadosMes">0</h3></div></div>
-    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-success"><small>Promedio general</small><h3 id="kpiPromedioGeneral">0</h3><small id="kpiTendencia">0%</small></div></div>
-    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-info"><small>Mejora</small><h3 id="kpiMejora">0%</h3></div></div>
-    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-danger"><small>Alertas bajo desempeño</small><h3 id="kpiAlertas">0</h3></div></div>
-    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-warning"><small>Recursos usados</small><h3 id="kpiRecursos">0</h3></div></div>
-    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-dark"><small>Cumplimiento actividades</small><h3 id="kpiCumplimiento">0%</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-primary"><small>Total cursos</small><h3 id="kpiTotalCursos">0</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-success"><small>Total paralelos</small><h3 id="kpiTotalParalelos">0</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-info"><small>Total estudiantes</small><h3 id="kpiTotalEstudiantes">0</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-danger"><small>Curso con más estudiantes</small><h3 id="kpiCursoTop">-</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-warning"><small>Paralelo con más estudiantes</small><h3 id="kpiParaleloTop">-</h3></div></div>
+    <div class="col-xl-2 col-md-4 col-6"><div class="dashboard-card bg-dark"><small>Evaluados este mes</small><h3 id="kpiEvaluadosMes">0</h3></div></div>
   </div>
 
   <div class="row mt-4 g-4">
     <div class="col-lg-4">
-      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Evolución de promedios</h5><canvas id="chartProgresoMes"></canvas></div></div>
+      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Estudiantes por curso</h5><canvas id="chartCursos"></canvas></div></div>
     </div>
     <div class="col-lg-4">
-      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Distribución por disgrafía</h5><canvas id="chartDisgrafia"></canvas></div></div>
+      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Distribución por sexo</h5><canvas id="chartSexo"></canvas></div></div>
     </div>
     <div class="col-lg-4">
-      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Comparativa mensual</h5><canvas id="chartComparativa"></canvas></div></div>
+      <div class="panel card border-0 shadow-sm"><div class="card-body"><h5>Distribución por diagnóstico</h5><canvas id="chartDiagnostico"></canvas></div></div>
     </div>
   </div>
 
   <div class="row mt-4 g-4">
     <div class="col-lg-8">
       <div class="panel card border-0 shadow-sm"><div class="card-body">
-        <h5>Heatmap de actividades por estudiante</h5>
+        <h5>Estudiantes por paralelo</h5>
         <div id="heatmapActividades" class="table-scroll-x"></div>
       </div></div>
     </div>

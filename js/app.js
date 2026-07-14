@@ -113,16 +113,18 @@ async function migrarDatosLocales() {
 
 function activarMenu() {
   document.addEventListener("click", async (e) => {
-    const opcion = e.target.closest(".menu-link");
+    const opcion = e.target.closest("[data-module]");
     if (!opcion || !opcion.dataset.module) return;
 
     e.preventDefault();
 
-    document.querySelectorAll(".menu-link").forEach((item) => {
-      item.classList.remove("active");
-    });
+    if (opcion.classList.contains("menu-link")) {
+      document.querySelectorAll(".menu-link").forEach((item) => {
+        item.classList.remove("active");
+      });
 
-    opcion.classList.add("active");
+      opcion.classList.add("active");
+    }
 
     await loadModule(opcion.dataset.module);
     await registrarEvento("navegacion_modulo", { modulo: opcion.dataset.module });

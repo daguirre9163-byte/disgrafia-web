@@ -3,8 +3,11 @@ import {
     obtenerCursos,
     actualizarCurso,
     obtenerCurso,
-    eliminarCurso
+    eliminarCurso,
+    obtenerParalelosPorCurso
 } from "../../firebase/firestore.js";
+
+import { validarEliminacionCurso } from "../../firebase/validaciones-integridad.js";
 
 import { obtenerConCache, guardarCache } from "../../js/firestore-service.js";
 
@@ -20,6 +23,10 @@ export async function crearCursoServicio(datos) {
     return curso;
 }
 
+export async function obtenerCursosServicio() {
+    return listarCursosServicio();
+}
+
 export async function actualizarCursoServicio(id, datos) {
     const curso = await actualizarCurso(id, datos);
     guardarCache(CACHE_KEY, null);
@@ -33,4 +40,12 @@ export async function obtenerCursoServicio(id) {
 export async function eliminarCursoServicio(id) {
     await eliminarCurso(id);
     guardarCache(CACHE_KEY, null);
+}
+
+export async function obtenerParalelosCursoServicio(cursoId) {
+    return obtenerParalelosPorCurso(cursoId);
+}
+
+export async function validarEliminacionCursoServicio(cursoId) {
+    return validarEliminacionCurso(cursoId);
 }
