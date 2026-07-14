@@ -6,10 +6,9 @@ import {
 } from "./firestore.js";
 
 export async function validarEliminacionCurso(cursoId) {
-    const [curso, paralelos, estudiantes] = await Promise.all([
+    const [curso, paralelos] = await Promise.all([
         obtenerCurso(cursoId),
-        obtenerParalelosPorCurso(cursoId),
-        obtenerEstudiantes({ cursoId })
+        obtenerParalelosPorCurso(cursoId)
     ]);
 
     if (!curso) {
@@ -28,9 +27,11 @@ export async function validarEliminacionCurso(cursoId) {
             mensaje: `No se puede eliminar el curso porque tiene ${paralelos.length} paralelo(s) asociado(s).`,
             curso,
             totalParalelos: paralelos.length,
-            totalEstudiantes: estudiantes.length
+            totalEstudiantes: 0
         };
     }
+
+    const estudiantes = await obtenerEstudiantes({ cursoId });
 
     if (estudiantes.length) {
         return {

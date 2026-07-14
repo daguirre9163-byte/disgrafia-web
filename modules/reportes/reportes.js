@@ -32,7 +32,7 @@ function obtenerResumenFiltrado() {
     const coincideSexo = !sexo || item.sexo === sexo;
     const coincideEstado = !estado || item.estado === estado;
     const coincideEdad = !edad || item.rangoEdad === edad;
-    const coincideDiagnostico = !diagnostico || item.disgrafia === diagnostico;
+    const coincideDiagnostico = !diagnostico || item.disgrafia === diagnostico || item.diagnostico === diagnostico;
 
     const fecha = item.ultimaEvaluacion ? new Date(item.ultimaEvaluacion * 1000) : null;
     const coincideDesde = !fechaDesde || (fecha && fecha >= new Date(`${fechaDesde}T00:00:00`));

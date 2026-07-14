@@ -140,8 +140,13 @@ function render(lista) {
   }
 
   cont.innerHTML = lista.map((curso) => {
+    const paralelosVisibles = curso.paralelos.slice(0, 5);
+    const paralelosRestantes = curso.paralelos.length - paralelosVisibles.length;
     const resumenParalelos = curso.paralelos.length
-      ? curso.paralelos.map((paralelo) => `<span class="badge bg-light text-dark border">${sanitizarTexto(paralelo.nombre)}</span>`).join(" ")
+      ? [
+          ...paralelosVisibles.map((paralelo) => `<span class="badge bg-light text-dark border">${sanitizarTexto(paralelo.nombre)}</span>`),
+          paralelosRestantes > 0 ? `<span class="badge bg-secondary">+${paralelosRestantes}</span>` : ""
+        ].join(" ")
       : '<span class="badge bg-warning text-dark">Sin paralelos</span>';
 
     return `
