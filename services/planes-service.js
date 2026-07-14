@@ -9,6 +9,7 @@ import {
 
 let cacheObjetivos = null;
 let cacheActividades = null;
+const DURACION_ACTIVIDAD_DEFAULT_MINUTOS = 20;
 
 async function cargarObjetivos() {
   if (cacheObjetivos) {
@@ -16,7 +17,13 @@ async function cargarObjetivos() {
   }
 
   const response = await fetch('/data/objetivos.json');
-  cacheObjetivos = response.ok ? await response.json() : { objetivos: {} };
+  if (!response.ok) {
+    console.warn('No fue posible cargar data/objetivos.json. Se usará estructura vacía.');
+    cacheObjetivos = { objetivos: {} };
+    return cacheObjetivos;
+  }
+
+  cacheObjetivos = await response.json();
   return cacheObjetivos;
 }
 
@@ -26,12 +33,28 @@ async function cargarActividades() {
   }
 
   const response = await fetch('/data/actividades.json');
-  cacheActividades = response.ok ? await response.json() : { actividadesPorObjetivo: {} };
+  if (!response.ok) {
+    console.warn('No fue posible cargar data/actividades.json. Se usará estructura vacía.');
+    cacheActividades = { actividadesPorObjetivo: {} };
+    return cacheActividades;
+  }
+
+  cacheActividades = await response.json();
   return cacheActividades;
 }
 
 function asegurarArray(valor) {
   return Array.isArray(valor) ? valor : [];
+}
+
+function extraerDuracionMinutos(duracion) {
+  if (typeof duracion === 'number') {
+    return duracion;
+  }
+
+  const texto = String(duracion || '');
+  const numero = parseInt(texto, 10);
+  return Number.isFinite(numero) ? numero : DURACION_ACTIVIDAD_DEFAULT_MINUTOS;
 }
 
 function normalizarPlan(plan = {}) {
@@ -45,7 +68,7 @@ function normalizarPlan(plan = {}) {
   };
 }
 
-export async function crearPlan(datos = {}) {
+function construirPlan(datos = {}) {
   if (!datos.nombre && !datos.nombrePlan) {
     throw new Error('Debes indicar un nombre para el plan.');
   }
@@ -54,18 +77,22 @@ export async function crearPlan(datos = {}) {
     throw new Error('Debes seleccionar un tipo de disgrafía.');
   }
 
-  const plan = {
+  return {
     ...datos,
     nombre: datos.nombre || datos.nombrePlan,
     nombrePlan: datos.nombre || datos.nombrePlan,
-    createdBy: auth.currentUser?.uid || 'anonimo',
+    createdBy: auth.currentUser?.uid || 'usuario-anonimo',
     estudianteId: datos.estudianteId || 'estudiante-general',
     estado: datos.estado || 'activo',
     objetivos: asegurarArray(datos.objetivos),
     actividades: asegurarArray(datos.actividades)
   };
+}
 
-  return normalizarPlan(plan);
+export async function crearPlan(datos = {}) {
+  const plan = construirPlan(datos);
+  const creado = await crearPlanIntervención(plan);
+  return normalizarPlan(creado);
 }
 
 export async function obtenerObjetivos(tipoDisgrafia = '') {
@@ -105,9 +132,13 @@ export async function generarActividades(objetivos = []) {
 }
 
 export async function guardarPlan(plan = {}) {
-  const planNormalizado = await crearPlan(plan);
-  const creado = await crearPlanIntervención(planNormalizado);
-  return normalizarPlan(creado);
+  if (plan?.id) {
+    const { id, ...datos } = plan;
+    const actualizado = await actualizarPlanIntervención(id, datos);
+    return normalizarPlan(actualizado);
+  }
+
+  return crearPlan(plan);
 }
 
 export async function obtenerPlanesUsuario() {
@@ -172,7 +203,7 @@ export async function agregarActividadServicio(planId, actividad = {}) {
   const nueva = {
     id: `act-${Date.now()}`,
     actividad: actividad.actividad || actividad.nombre || 'Actividad',
-    duracion: actividad.duracion || 20,
+    duracion: actividad.duracion || `${DURACION_ACTIVIDAD_DEFAULT_MINUTOS} minutos`,
     frecuencia: actividad.frecuencia || '3 veces por semana',
     completado: false
   };
@@ -249,8 +280,10 @@ export async function obtenerEstadísticasServicio(planId) {
     actividadesCompletadas: completadas,
     actividadesPendientes: actividades.length - completadas,
     porcentajeCompleción: actividades.length ? Math.round((completadas / actividades.length) * 100) : 0,
-    duracionTotal: actividades.length * 20,
-    duracionPromedio: actividades.length ? 20 : 0,
+    duracionTotal: actividades.reduce((acc, item) => acc + extraerDuracionMinutos(item.duracion), 0),
+    duracionPromedio: actividades.length
+      ? Math.round(actividades.reduce((acc, item) => acc + extraerDuracionMinutos(item.duracion), 0) / actividades.length)
+      : 0,
     frecuencias: actividades.reduce((acc, item) => {
       const frecuencia = item.frecuencia || 'Sin definir';
       acc[frecuencia] = (acc[frecuencia] || 0) + 1;

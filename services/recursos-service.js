@@ -13,6 +13,7 @@ import {
 const FUENTE_LOCAL = '/data/recursos.json';
 
 function normalizarRecurso(recurso = {}) {
+  const downloadCount = Number(recurso.downloadCount ?? recurso.descargado ?? 0);
   return {
     id: recurso.id,
     titulo: recurso.titulo || recurso.nombre || 'Recurso sin título',
@@ -20,8 +21,9 @@ function normalizarRecurso(recurso = {}) {
     tipo: recurso.tipo || 'Teoría',
     categoria: recurso.categoria || 'General',
     url: recurso.url || '#',
-    autor: recurso.autor || 'SIGEDIS',
-    descargado: Number(recurso.descargado ?? recurso.downloadCount ?? 0)
+    autor: recurso.autor || 'Sistema SIGEDIS',
+    downloadCount,
+    descargado: downloadCount
   };
 }
 
@@ -73,7 +75,7 @@ export async function filtrarRecursos(tipo = '') {
 }
 
 export async function guardarRecursoVisitado(recurso = {}) {
-  const usuarioId = auth.currentUser?.uid || 'anonimo';
+  const usuarioId = auth.currentUser?.uid || 'usuario-anonimo';
 
   try {
     await addDoc(collection(db, 'recursosConsultados'), {
@@ -91,7 +93,8 @@ export async function guardarRecursoVisitado(recurso = {}) {
   if (recurso?.id && typeof recurso.id === 'string') {
     try {
       await actualizarRecurso(recurso.id, {
-        downloadCount: Number(recurso.descargado ?? 0) + 1
+        downloadCount: Number(recurso.downloadCount ?? recurso.descargado ?? 0) + 1,
+        descargado: Number(recurso.downloadCount ?? recurso.descargado ?? 0) + 1
       });
     } catch (error) {
       console.warn('No fue posible actualizar contador de descargas.', error);

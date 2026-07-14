@@ -3,7 +3,6 @@ import {
   crearPlan,
   obtenerObjetivos,
   generarActividades,
-  guardarPlan,
   obtenerPlanesUsuario,
   actualizarPlan,
   eliminarPlan
@@ -19,7 +18,7 @@ function escapeHtml(texto = '') {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
 
@@ -104,7 +103,7 @@ async function cargarTipos() {
 async function guardarDesdeFormulario(event) {
   event.preventDefault();
 
-  const base = {
+  const datosPlan = {
     nombre: document.getElementById('nombrePlan')?.value.trim(),
     nombrePlan: document.getElementById('nombrePlan')?.value.trim(),
     estudianteId: document.getElementById('estudianteId')?.value.trim(),
@@ -114,12 +113,10 @@ async function guardarDesdeFormulario(event) {
     actividades: estado.actividades
   };
 
-  const plan = await crearPlan(base);
-
   if (estado.editandoId) {
-    await actualizarPlan(estado.editandoId, plan);
+    await actualizarPlan(estado.editandoId, datosPlan);
   } else {
-    await guardarPlan(plan);
+    await crearPlan(datosPlan);
   }
 
   event.target.reset();
@@ -174,7 +171,7 @@ async function cargarTablaPlanes() {
 
       const objetivosSeleccionados = new Set(plan.objetivos || []);
       document.querySelectorAll('input[name="objetivo"]').forEach((input) => {
-        input.checked = objetivosSeleccionados.has(input.value) || objetivosSeleccionados.has(input.descripcion);
+        input.checked = objetivosSeleccionados.has(input.value);
       });
 
       estado.actividades = plan.actividades || [];
