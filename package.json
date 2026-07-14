@@ -1,0 +1,23 @@
+{
+  "name": "disgrafia-web",
+  "version": "1.0.0",
+  "description": "Plataforma web para diagnóstico y tratamiento de disgrafia",
+  "private": true,
+  "scripts": {
+    "start": "firebase serve --only hosting",
+    "deploy": "firebase deploy",
+    "build": "echo 'No build required for static site'",
+    "serve": "firebase serve"
+  },
+  "keywords": [
+    "disgrafia",
+    "educación",
+    "intervención",
+    "planes"
+  ],
+  "author": "Darwin Fernando Aguirre Barcia",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^12.5.0"
+  }
+}
