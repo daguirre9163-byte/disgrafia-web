@@ -1,8 +1,10 @@
+import { buildAppUrl } from "./navigation.js";
+
 export async function loadModule(moduleName) {
   const contentArea = document.getElementById('content');
   
   try {
-    const response = await fetch(`modules/${moduleName}/${moduleName}.html`);
+    const response = await fetch(buildAppUrl(`modules/${moduleName}/${moduleName}.html`));
     if (response.ok) {
       const html = await response.text();
       contentArea.innerHTML = html;
@@ -14,7 +16,7 @@ export async function loadModule(moduleName) {
       }
 
       const script = document.createElement('script');
-      script.src = `modules/${moduleName}/${moduleName}.js`;
+      script.src = buildAppUrl(`modules/${moduleName}/${moduleName}.js`);
       script.type = 'module';
       script.id = 'module-script';
       document.body.appendChild(script);

@@ -1,6 +1,7 @@
 import { loadModule } from "./router.js";
 import { inicializarSidebar } from "../components/sidebar/sidebar.js";
 import { inicializarNavbar } from "../components/navbar/navbar.js";
+import { buildAppUrl, getStartModule, setActiveModule } from "./navigation.js";
 import { migrarLocalStorageAFirestore } from "./firestore-service.js";
 import { crearEstudiante, crearEvaluacion, crearActividad } from "../firebase/firestore.js";
 import { inicializarNotificaciones, registrarNotificacion } from "./notificaciones.js";
@@ -11,8 +12,22 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/fi
 let sidebarCargado = false;
 let navbarCargado = false;
 
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
+let appInicializada = false;
+let initAppPromise = null;
+
+export async function initApp() {
+  if (appInicializada) {
+    return initAppPromise;
+  }
+
+  if (initAppPromise) {
+    return initAppPromise;
+  }
+
+  initAppPromise = (async () => {
+    appInicializada = true;
+
+    try {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/public/service-worker.js").catch((error) => {
         console.warn("No se pudo registrar el Service Worker:", error);
@@ -40,23 +55,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     inicializarAnalytics();
     await migrarDatosLocales();
     activarMenu();
-    await loadModule("dashboard");
-    await registrarEvento("sesion_iniciada", { modulo: "dashboard" });
+
+    const moduloInicial = getStartModule();
+    await loadModule(moduloInicial);
+    setActiveModule(moduloInicial);
+    await registrarEvento("sesion_iniciada", { modulo: moduloInicial });
     iniciarControlSesion();
 
-    console.log("✅ SIGEDIS iniciado correctamente");
-  } catch (error) {
-    console.error("Error al iniciar SIGEDIS:", error);
-  }
-});
+      console.log("✅ SIGEDIS iniciado correctamente");
+    } catch (error) {
+      appInicializada = false;
+      initAppPromise = null;
+      console.error("Error al iniciar SIGEDIS:", error);
+    }
+  })();
+
+  return initAppPromise;
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp, { once: true });
+} else {
+  initApp();
+}
 
 async function cargarSidebar() {
-  const response = await fetch("components/sidebar/sidebar.html");
+  const response = await fetch(buildAppUrl("components/sidebar/sidebar.html"));
   document.getElementById("sidebar").innerHTML = await response.text();
 }
 
 async function cargarNavbar() {
-  const response = await fetch("components/navbar/navbar.html");
+  const response = await fetch(buildAppUrl("components/navbar/navbar.html"));
   document.getElementById("navbar").innerHTML = await response.text();
 }
 
@@ -126,6 +155,7 @@ function activarMenu() {
       opcion.classList.add("active");
     }
 
+    setActiveModule(opcion.dataset.module);
     await loadModule(opcion.dataset.module);
     await registrarEvento("navegacion_modulo", { modulo: opcion.dataset.module });
   });
