@@ -1,5 +1,18 @@
+function escaparHTML(valor = "") {
+  return String(valor)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function cargarFragmento(url, target) {
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar el recurso solicitado: ${response.status}`);
+  }
+
   const html = await response.text();
 
   if (typeof target === "string") {
@@ -18,12 +31,12 @@ export function crearTarjetaResumen({ titulo, valor, icono = "bi-bar-chart", col
   return `
     <div class="card border-0 shadow-sm h-100">
       <div class="card-body d-flex align-items-center gap-3">
-        <div class="rounded-circle bg-${color} bg-opacity-10 text-${color} d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-          <i class="bi ${icono}"></i>
+        <div class="rounded-circle bg-${escaparHTML(color)} bg-opacity-10 text-${escaparHTML(color)} d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+          <i class="bi ${escaparHTML(icono)}"></i>
         </div>
         <div>
-          <p class="text-muted mb-1">${titulo}</p>
-          <h4 class="mb-0">${valor}</h4>
+          <p class="text-muted mb-1">${escaparHTML(titulo)}</p>
+          <h4 class="mb-0">${escaparHTML(valor)}</h4>
         </div>
       </div>
     </div>`;
@@ -32,9 +45,9 @@ export function crearTarjetaResumen({ titulo, valor, icono = "bi-bar-chart", col
 export function renderEmptyState({ icono = "bi-inbox", titulo, descripcion, accion = "" }) {
   return `
     <div class="empty-state text-center py-5">
-      <i class="bi ${icono} fs-1 text-muted"></i>
-      <h4 class="mt-3">${titulo}</h4>
-      <p class="text-muted mb-0">${descripcion}</p>
+      <i class="bi ${escaparHTML(icono)} fs-1 text-muted"></i>
+      <h4 class="mt-3">${escaparHTML(titulo)}</h4>
+      <p class="text-muted mb-0">${escaparHTML(descripcion)}</p>
       ${accion}
     </div>`;
 }
