@@ -6,7 +6,12 @@ import {
   obtenerCursoServicio
 } from "./cursos-service.js";
 
+import { obtenerEstudiantesServicio } from "../estudiantes/estudiantes-service.js";
+import { registrarNotificacion } from "../../js/notificaciones.js";
+import { sanitizarTexto } from "../../js/validaciones.js";
+
 let cursos = [];
+let estudiantes = [];
 let modal;
 let editando = false;
 let cursoId = null;
@@ -39,22 +44,24 @@ function nuevoCurso() {
 
 async function guardarCurso() {
   const datos = {
-    nombre: document.getElementById("nombreCurso").value.trim(),
-    paralelo: document.getElementById("paraleloCurso").value.trim(),
+    nombre: sanitizarTexto(document.getElementById("nombreCurso").value.trim()),
+    paralelo: sanitizarTexto(document.getElementById("paraleloCurso").value.trim()),
     nivel: document.getElementById("nivelCurso").value,
     jornada: document.getElementById("jornadaCurso").value,
-    descripcion: document.getElementById("descripcionCurso").value.trim()
+    descripcion: sanitizarTexto(document.getElementById("descripcionCurso").value.trim())
   };
 
   if (!datos.nombre || !datos.paralelo) {
-    alert("Complete los campos obligatorios.");
+    await registrarNotificacion({ mensaje: "Completa nombre y paralelo", tipo: "danger" });
     return;
   }
 
   if (editando) {
     await actualizarCursoServicio(cursoId, datos);
+    await registrarNotificacion({ mensaje: "Curso actualizado", tipo: "success" });
   } else {
     await crearCursoServicio(datos);
+    await registrarNotificacion({ mensaje: "Curso creado correctamente", tipo: "success" });
   }
 
   modal.hide();
@@ -64,6 +71,19 @@ async function guardarCurso() {
 
 async function cargarCursos() {
   cursos = await listarCursosServicio();
+  estudiantes = await obtenerEstudiantesServicio();
+  
+  // CONTAR ESTUDIANTES POR CURSO
+  const contadores = {};
+  estudiantes.forEach(e => {
+    contadores[e.cursoId] = (contadores[e.cursoId] || 0) + 1;
+  });
+  
+  // ASIGNAR CONTADORES A CURSOS
+  cursos.forEach(c => {
+    c.totalEstudiantes = contadores[c.id] || 0;
+  });
+  
   render(cursos);
   actualizarIndicadores();
 }
@@ -77,7 +97,8 @@ function render(lista) {
         <div class="empty-state">
           <i class="bi bi-book"></i>
           <h4>No existen cursos registrados</h4>
-          <button class="btn btn-primary" id="crearDesdeVacio">Crear curso</button>
+          <p>Crea tu primer curso para comenzar a gestionar estudiantes, evaluaciones y recursos.</p>
+          <button class="btn btn-primary" id="crearDesdeVacio">Crear mi primer curso</button>
         </div>
       </div>`;
     document.getElementById("crearDesdeVacio")?.addEventListener("click", nuevoCurso);
@@ -86,18 +107,40 @@ function render(lista) {
 
   cont.innerHTML = lista.map(c => `
     <div class="col-lg-4 col-md-6">
-      <div class="course-card">
-        <div class="course-header">
-          <h4>${c.nombre} ${c.paralelo}</h4>
-          <small>${c.nivel}</small>
+      <div class="card h-100 border-0 shadow-sm course-card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">${sanitizarTexto(c.nombre)} <small>${sanitizarTexto(c.paralelo)}</small></h5>
         </div>
-        <div class="course-body">
-          <div class="course-info"><i class="bi bi-clock"></i>${c.jornada}</div>
-          <div class="course-info"><i class="bi bi-mortarboard"></i>${c.totalEstudiantes || 0} estudiantes</div>
+        <div class="card-body">
+          <p class="mb-2"><strong>Nivel:</strong> ${sanitizarTexto(c.nivel)}</p>
+          <p class="mb-2"><strong>Jornada:</strong> ${sanitizarTexto(c.jornada)}</p>
+          <p class="mb-3"><strong>Descripción:</strong> ${sanitizarTexto(c.descripcion || "Sin descripción")}</p>
+          
+          <!-- ESTADÍSTICAS -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <div class="p-2 bg-light rounded text-center">
+                <div class="h6 mb-0">${c.totalEstudiantes || 0}</div>
+                <small class="text-muted">Estudiantes</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 bg-light rounded text-center">
+                <div class="h6 mb-0">2026-2027</div>
+                <small class="text-muted">Período</small>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="course-footer">
-          <button class="btn btn-outline-warning editar" data-id="${c.id}">Editar</button>
-          <button class="btn btn-outline-danger eliminar" data-id="${c.id}">Eliminar</button>
+        <div class="card-footer bg-white border-top">
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary flex-grow-1 editar" data-id="${c.id}">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+            <button class="btn btn-sm btn-outline-danger eliminar" data-id="${c.id}">
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -122,9 +165,9 @@ function actualizarIndicadores() {
 function filtrarCursos(e) {
   const texto = e.target.value.toLowerCase();
   render(cursos.filter(curso =>
-    curso.nombre.toLowerCase().includes(texto) ||
-    curso.paralelo.toLowerCase().includes(texto) ||
-    curso.nivel.toLowerCase().includes(texto)
+    sanitizarTexto(curso.nombre).toLowerCase().includes(texto) ||
+    sanitizarTexto(curso.paralelo).toLowerCase().includes(texto) ||
+    sanitizarTexto(curso.nivel).toLowerCase().includes(texto)
   ));
 }
 
@@ -145,7 +188,22 @@ async function editar(id) {
 }
 
 async function borrar(id) {
-  if (!confirm("¿Eliminar este curso?")) return;
+  const curso = cursos.find(c => c.id === id);
+  const totalEstudiantes = curso?.totalEstudiantes || 0;
+  
+  if (totalEstudiantes > 0) {
+    await registrarNotificacion({ 
+      mensaje: `⚠️ No se puede eliminar. El curso tiene ${totalEstudiantes} estudiante(s) asignado(s).", 
+      tipo: "danger" 
+    });
+    return;
+  }
+  
+  if (!confirm("¿Eliminar este curso? Esta acción no se puede deshacer.")) return;
+  
   await eliminarCursoServicio(id);
+  await registrarNotificacion({ mensaje: "Curso eliminado", tipo: "warning" });
   await cargarCursos();
 }
+
+window.cargarCursos = cargarCursos;
