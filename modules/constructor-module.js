@@ -14,6 +14,15 @@ const estado = {
   actividades: []
 };
 
+function escapeHtml(texto = '') {
+  return String(texto)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function getObjetivosSeleccionados() {
   return Array.from(document.querySelectorAll('input[name="objetivo"]:checked')).map((item) => item.value);
 }
@@ -29,10 +38,10 @@ function renderActividades() {
 
   lista.innerHTML = estado.actividades.map((item) => `
     <div class="list-group-item">
-      <strong>${item.actividad}</strong>
-      <div class="small text-muted">Objetivo: ${item.objetivo}</div>
-      <div class="small">Duración: ${item.duracion} · Frecuencia: ${item.frecuencia}</div>
-      <div class="small text-muted">Recursos: ${item.recursos.join(', ')}</div>
+      <strong>${escapeHtml(item.actividad)}</strong>
+      <div class="small text-muted">Objetivo: ${escapeHtml(item.objetivo)}</div>
+      <div class="small">Duración: ${escapeHtml(item.duracion)} · Frecuencia: ${escapeHtml(item.frecuencia)}</div>
+      <div class="small text-muted">Recursos: ${escapeHtml(item.recursos.join(', '))}</div>
     </div>
   `).join('');
 }
@@ -46,9 +55,9 @@ function renderVistaPrevia() {
   const objetivos = getObjetivosSeleccionados();
 
   vista.innerHTML = `
-    <h2 class="h6">${nombre}</h2>
-    <p class="mb-2"><strong>Tipo:</strong> ${tipo}</p>
-    <p class="mb-2"><strong>Objetivos (${objetivos.length}):</strong> ${objetivos.join(', ') || 'Sin selección'}</p>
+    <h2 class="h6">${escapeHtml(nombre)}</h2>
+    <p class="mb-2"><strong>Tipo:</strong> ${escapeHtml(tipo)}</p>
+    <p class="mb-2"><strong>Objetivos (${objetivos.length}):</strong> ${escapeHtml(objetivos.join(', ') || 'Sin selección')}</p>
     <p class="mb-0"><strong>Actividades:</strong> ${estado.actividades.length}</p>
   `;
 }
@@ -177,7 +186,10 @@ async function cargarTablaPlanes() {
 }
 
 async function init() {
-  document.getElementById('fechaInicio').value = new Date().toISOString().split('T')[0];
+  const fechaInicio = document.getElementById('fechaInicio');
+  if (fechaInicio) {
+    fechaInicio.value = new Date().toISOString().split('T')[0];
+  }
   await cargarTipos();
 
   document.getElementById('btnGenerarActividades')?.addEventListener('click', async () => {

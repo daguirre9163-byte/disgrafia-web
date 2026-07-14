@@ -71,7 +71,7 @@ async function renderizar() {
       if (!recurso) return;
 
       await guardarRecursoVisitado(recurso);
-      window.open(recurso.url, '_blank', 'noopener');
+      window.open(recurso.url, '_blank', 'noopener,noreferrer');
     });
   });
 }
