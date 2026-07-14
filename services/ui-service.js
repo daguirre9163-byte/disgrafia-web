@@ -10,13 +10,39 @@ function escaparHTML(valor = "") {
 function sanitizarHTMLPermitido(html = "") {
   const template = document.createElement("template");
   template.innerHTML = String(html);
+  const atributosURL = new Set(["href", "src", "xlink:href", "action", "formaction", "poster"]);
+  const protocolosPermitidos = new Set(["http:", "https:", "mailto:", "tel:"]);
 
-  template.content.querySelectorAll("script, style, iframe, object, embed").forEach((node) => node.remove());
+  template.content.querySelectorAll("script, style, iframe, object, embed, link, meta").forEach((node) => node.remove());
   template.content.querySelectorAll("*").forEach((node) => {
     [...node.attributes].forEach((attr) => {
       const nombre = attr.name.toLowerCase();
-      const valor = attr.value.trim().toLowerCase();
-      if (nombre.startsWith("on") || valor.startsWith("javascript:")) {
+      const valorOriginal = attr.value.trim();
+      const valor = valorOriginal.toLowerCase();
+
+      if (nombre.startsWith("on") || nombre === "style") {
+        node.removeAttribute(attr.name);
+        return;
+      }
+
+      if (!atributosURL.has(nombre)) {
+        return;
+      }
+
+      if (!valorOriginal || valorOriginal.startsWith("#") || valorOriginal.startsWith("/") || valorOriginal.startsWith("./") || valorOriginal.startsWith("../")) {
+        return;
+      }
+
+      try {
+        const url = new URL(valorOriginal, window.location.origin);
+        if (!protocolosPermitidos.has(url.protocol)) {
+          node.removeAttribute(attr.name);
+        }
+      } catch {
+        node.removeAttribute(attr.name);
+      }
+
+      if (valor.startsWith("javascript:") || valor.startsWith("data:") || valor.startsWith("vbscript:")) {
         node.removeAttribute(attr.name);
       }
     });
@@ -31,7 +57,7 @@ export async function cargarFragmento(url, target) {
     throw new Error(`No se pudo cargar el recurso solicitado: ${response.status}`);
   }
 
-  const html = await response.text();
+  const html = sanitizarHTMLPermitido(await response.text());
 
   if (typeof target === "string") {
     const element = document.querySelector(target);

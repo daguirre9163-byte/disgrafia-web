@@ -1,5 +1,9 @@
+function getDatasetValue(key) {
+  return document.body?.dataset?.[key] || document.documentElement?.dataset?.[key] || "";
+}
+
 export function getAppBasePath() {
-  const base = document.body?.dataset?.appBase || "";
+  const base = getDatasetValue("appBase");
   if (!base) return "";
   return base.endsWith("/") ? base : `${base}/`;
 }
@@ -15,7 +19,7 @@ export function buildAppUrl(path = "") {
 
 export function getStartModule(defaultModule = "dashboard") {
   const params = new URLSearchParams(window.location.search);
-  return params.get("module") || document.body?.dataset?.startModule || defaultModule;
+  return params.get("module") || getDatasetValue("startModule") || defaultModule;
 }
 
 export function setActiveModule(moduleName) {

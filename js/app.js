@@ -23,7 +23,7 @@ export async function initApp() {
 
   try {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register(buildAppUrl("public/service-worker.js")).catch((error) => {
+      navigator.serviceWorker.register("/public/service-worker.js").catch((error) => {
         console.warn("No se pudo registrar el Service Worker:", error);
       });
     }
