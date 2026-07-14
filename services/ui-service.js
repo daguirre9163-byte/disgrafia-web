@@ -54,7 +54,7 @@ function sanitizarHTMLPermitido(html = "") {
 export async function cargarFragmento(url, target) {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`No se pudo cargar el recurso solicitado: ${response.status}`);
+    throw new Error(`No se pudo cargar el recurso solicitado (${url}): ${response.status}`);
   }
 
   const html = sanitizarHTMLPermitido(await response.text());

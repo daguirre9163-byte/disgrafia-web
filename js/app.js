@@ -13,15 +13,21 @@ let sidebarCargado = false;
 let navbarCargado = false;
 
 let appInicializada = false;
+let initAppPromise = null;
 
 export async function initApp() {
   if (appInicializada) {
-    return;
+    return initAppPromise;
   }
 
-  appInicializada = true;
+  if (initAppPromise) {
+    return initAppPromise;
+  }
 
-  try {
+  initAppPromise = (async () => {
+    appInicializada = true;
+
+    try {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/public/service-worker.js").catch((error) => {
         console.warn("No se pudo registrar el Service Worker:", error);
@@ -56,10 +62,15 @@ export async function initApp() {
     await registrarEvento("sesion_iniciada", { modulo: moduloInicial });
     iniciarControlSesion();
 
-    console.log("✅ SIGEDIS iniciado correctamente");
-  } catch (error) {
-    console.error("Error al iniciar SIGEDIS:", error);
-  }
+      console.log("✅ SIGEDIS iniciado correctamente");
+    } catch (error) {
+      appInicializada = false;
+      initAppPromise = null;
+      console.error("Error al iniciar SIGEDIS:", error);
+    }
+  })();
+
+  return initAppPromise;
 }
 
 if (document.readyState === "loading") {
