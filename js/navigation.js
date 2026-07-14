@@ -6,7 +6,7 @@ export function getAppBasePath() {
 
 export function buildAppUrl(path = "") {
   if (typeof path !== "string") {
-    throw new TypeError("buildAppUrl espera una ruta en formato string.");
+    throw new TypeError("buildAppUrl expects path to be a string.");
   }
 
   const normalizedPath = path.replace(/^\/+/, "");

@@ -3,7 +3,7 @@ function escaparHTML(valor = "") {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -48,6 +48,6 @@ export function renderEmptyState({ icono = "bi-inbox", titulo, descripcion, acci
       <i class="bi ${escaparHTML(icono)} fs-1 text-muted"></i>
       <h4 class="mt-3">${escaparHTML(titulo)}</h4>
       <p class="text-muted mb-0">${escaparHTML(descripcion)}</p>
-      ${accion}
+      ${escaparHTML(accion)}
     </div>`;
 }
