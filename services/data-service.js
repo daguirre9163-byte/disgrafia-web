@@ -11,7 +11,8 @@ export function obtenerDatoLocal(clave, valorPorDefecto = null) {
 
   try {
     return JSON.parse(valor);
-  } catch {
+  } catch (error) {
+    console.warn("No se pudo parsear el dato local almacenado.", error);
     return valorPorDefecto;
   }
 }

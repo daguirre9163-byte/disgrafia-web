@@ -7,6 +7,24 @@ function escaparHTML(valor = "") {
     .replace(/'/g, "&#39;");
 }
 
+function sanitizarHTMLPermitido(html = "") {
+  const template = document.createElement("template");
+  template.innerHTML = String(html);
+
+  template.content.querySelectorAll("script, style, iframe, object, embed").forEach((node) => node.remove());
+  template.content.querySelectorAll("*").forEach((node) => {
+    [...node.attributes].forEach((attr) => {
+      const nombre = attr.name.toLowerCase();
+      const valor = attr.value.trim().toLowerCase();
+      if (nombre.startsWith("on") || valor.startsWith("javascript:")) {
+        node.removeAttribute(attr.name);
+      }
+    });
+  });
+
+  return template.innerHTML;
+}
+
 export async function cargarFragmento(url, target) {
   const response = await fetch(url);
   if (!response.ok) {
@@ -48,6 +66,6 @@ export function renderEmptyState({ icono = "bi-inbox", titulo, descripcion, acci
       <i class="bi ${escaparHTML(icono)} fs-1 text-muted"></i>
       <h4 class="mt-3">${escaparHTML(titulo)}</h4>
       <p class="text-muted mb-0">${escaparHTML(descripcion)}</p>
-      ${escaparHTML(accion)}
+      ${sanitizarHTMLPermitido(accion)}
     </div>`;
 }
