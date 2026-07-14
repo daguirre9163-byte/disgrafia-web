@@ -1,0 +1,44 @@
+{
+  "recursos": [
+    {
+      "id": 1,
+      "titulo": "Guía de Intervención en Disgrafía Motriz",
+      "descripcion": "Documento con estrategias para intervenir la disgrafía motriz en aula y casa.",
+      "tipo": "PDF",
+      "categoria": "Guías",
+      "url": "/docs/guia-disgrafia-motriz.pdf",
+      "autor": "Especialistas en educación",
+      "descargado": 45
+    },
+    {
+      "id": 2,
+      "titulo": "Actividades de Motricidad Fina",
+      "descripcion": "20 actividades prácticas para desarrollar motricidad fina y control de lápiz.",
+      "tipo": "Actividad",
+      "categoria": "Ejercicios",
+      "url": "/docs/actividades-motricidad.pdf",
+      "autor": "Terapeuta ocupacional",
+      "descargado": 82
+    },
+    {
+      "id": 3,
+      "titulo": "Video: Postura y agarre correcto del lápiz",
+      "descripcion": "Microclase con pautas para una postura ergonómica y agarre funcional.",
+      "tipo": "Video",
+      "categoria": "Tutoriales",
+      "url": "https://www.youtube.com/watch?v=Qw9Q8xvLQ7g",
+      "autor": "SIGEDIS",
+      "descargado": 29
+    },
+    {
+      "id": 4,
+      "titulo": "Teoría base sobre disgrafía",
+      "descripcion": "Conceptos fundamentales, tipos de disgrafía y señales de alerta temprana.",
+      "tipo": "Teoría",
+      "categoria": "Fundamentos",
+      "url": "/docs/disgrafia-info.json",
+      "autor": "Equipo psicopedagógico",
+      "descargado": 17
+    }
+  ]
+}

@@ -1,604 +1,331 @@
-import { db } from "../config/firebase-config.js";
+import { auth } from '../firebase/firebase-config.js';
 import {
-    collection,
-    addDoc,
-    getDocs,
-    getDoc,
-    doc,
-    updateDoc,
-    deleteDoc,
-    query,
-    where,
-    orderBy,
-    Timestamp
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  crearPlanIntervención,
+  obtenerPlanesIntervención,
+  obtenerPlanIntervención,
+  actualizarPlanIntervención,
+  eliminarPlanIntervención
+} from '../firebase/firestore.js';
 
-// Referencia a la colección
-const planesCollection = collection(db, "planesIntervención");
+let cacheObjetivos = null;
+let cacheActividades = null;
+const DURACION_ACTIVIDAD_DEFAULT_MINUTOS = 20;
 
-// ==========================================
-// CREAR PLAN
-// ==========================================
+async function cargarObjetivos() {
+  if (cacheObjetivos) {
+    return cacheObjetivos;
+  }
 
-export async function crearPlanServicio(planData) {
-    try {
-        console.log("📝 Creando nuevo plan:", planData.nombrePlan);
-        
-        const planConTimestamp = {
-            ...planData,
-            createdAt: Timestamp.now(),
-            updatedAt: Timestamp.now(),
-            estado: planData.estado || "activo",
-            objetivos: planData.objetivos || [],
-            actividades: planData.actividades || [],
-            registroSeguimiento: planData.registroSeguimiento || []
-        };
-        
-        const docRef = await addDoc(planesCollection, planConTimestamp);
-        
-        console.log("✅ Plan creado con ID:", docRef.id);
-        
-        return {
-            id: docRef.id,
-            ...planConTimestamp
-        };
-    } catch (error) {
-        console.error("❌ Error creando plan:", error);
-        throw new Error(`Error al crear plan: ${error.message}`);
-    }
+  const response = await fetch('/data/objetivos.json');
+  if (!response.ok) {
+    console.warn('No fue posible cargar data/objetivos.json. Se usará estructura vacía.');
+    cacheObjetivos = { objetivos: {} };
+    return cacheObjetivos;
+  }
+
+  cacheObjetivos = await response.json();
+  return cacheObjetivos;
 }
 
-// ==========================================
-// OBTENER PLANES
-// ==========================================
+async function cargarActividades() {
+  if (cacheActividades) {
+    return cacheActividades;
+  }
 
-export async function obtenerPlanesServicio(filtros = {}) {
-    try {
-        console.log("📊 Obteniendo planes...");
-        
-        let q = query(planesCollection, orderBy("createdAt", "desc"));
-        
-        // Aplicar filtros si existen
-        if (filtros.estado) {
-            q = query(planesCollection, where("estado", "==", filtros.estado), orderBy("createdAt", "desc"));
-        }
-        
-        if (filtros.tipo) {
-            q = query(planesCollection, where("tipo", "==", filtros.tipo), orderBy("createdAt", "desc"));
-        }
-        
-        if (filtros.estado && filtros.tipo) {
-            q = query(
-                planesCollection,
-                where("estado", "==", filtros.estado),
-                where("tipo", "==", filtros.tipo),
-                orderBy("createdAt", "desc")
-            );
-        }
-        
-        const querySnapshot = await getDocs(q);
-        
-        const planes = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate?.(),
-            updatedAt: doc.data().updatedAt?.toDate?.(),
-            fechaInicio: doc.data().fechaInicio,
-            fechaTermino: doc.data().fechaTermino
-        }));
-        
-        console.log(`✅ Se obtuvieron ${planes.length} planes`);
-        
-        return planes;
-    } catch (error) {
-        console.error("❌ Error obteniendo planes:", error);
-        throw new Error(`Error al obtener planes: ${error.message}`);
-    }
+  const response = await fetch('/data/actividades.json');
+  if (!response.ok) {
+    console.warn('No fue posible cargar data/actividades.json. Se usará estructura vacía.');
+    cacheActividades = { actividadesPorObjetivo: {} };
+    return cacheActividades;
+  }
+
+  cacheActividades = await response.json();
+  return cacheActividades;
 }
 
-// ==========================================
-// OBTENER PLAN POR ID
-// ==========================================
-
-export async function obtenerPlanPorIdServicio(planId) {
-    try {
-        console.log("📋 Obteniendo plan:", planId);
-        
-        const docRef = doc(planesCollection, planId);
-        const docSnap = await getDoc(docRef);
-        
-        if (!docSnap.exists()) {
-            throw new Error("Plan no encontrado");
-        }
-        
-        const plan = {
-            id: docSnap.id,
-            ...docSnap.data(),
-            createdAt: docSnap.data().createdAt?.toDate?.(),
-            updatedAt: docSnap.data().updatedAt?.toDate?.()
-        };
-        
-        console.log("✅ Plan obtenido:", plan.nombrePlan);
-        
-        return plan;
-    } catch (error) {
-        console.error("❌ Error obteniendo plan:", error);
-        throw new Error(`Error al obtener plan: ${error.message}`);
-    }
+function asegurarArray(valor) {
+  return Array.isArray(valor) ? valor : [];
 }
 
-// ==========================================
-// ACTUALIZAR PLAN
-// ==========================================
+function extraerDuracionMinutos(duracion) {
+  if (typeof duracion === 'number') {
+    return duracion;
+  }
 
-export async function actualizarPlanServicio(plan) {
-    try {
-        console.log("📝 Actualizando plan:", plan.id);
-        
-        const { id, ...datosActualizacion } = plan;
-        
-        datosActualizacion.updatedAt = Timestamp.now();
-        
-        const docRef = doc(planesCollection, id);
-        await updateDoc(docRef, datosActualizacion);
-        
-        console.log("✅ Plan actualizado");
-        
-        return plan;
-    } catch (error) {
-        console.error("❌ Error actualizando plan:", error);
-        throw new Error(`Error al actualizar plan: ${error.message}`);
-    }
+  const texto = String(duracion || '');
+  const numero = parseInt(texto, 10);
+  return Number.isFinite(numero) ? numero : DURACION_ACTIVIDAD_DEFAULT_MINUTOS;
 }
 
-// ==========================================
-// ELIMINAR PLAN
-// ==========================================
-
-export async function eliminarPlanServicio(planId) {
-    try {
-        console.log("🗑️ Eliminando plan:", planId);
-        
-        const docRef = doc(planesCollection, planId);
-        await deleteDoc(docRef);
-        
-        console.log("✅ Plan eliminado");
-    } catch (error) {
-        console.error("❌ Error eliminando plan:", error);
-        throw new Error(`Error al eliminar plan: ${error.message}`);
-    }
+function normalizarPlan(plan = {}) {
+  return {
+    ...plan,
+    nombre: plan.nombre || plan.nombrePlan || 'Plan de intervención',
+    objetivos: asegurarArray(plan.objetivos),
+    actividades: asegurarArray(plan.actividades),
+    estudianteId: plan.estudianteId || 'estudiante-general',
+    tipoDisgrafia: plan.tipoDisgrafia || plan.tipo || ''
+  };
 }
 
-// ==========================================
-// OBJETIVOS
-// ==========================================
+function construirPlan(datos = {}) {
+  if (!datos.nombre && !datos.nombrePlan) {
+    throw new Error('Debes indicar un nombre para el plan.');
+  }
+
+  if (!datos.tipoDisgrafia) {
+    throw new Error('Debes seleccionar un tipo de disgrafía.');
+  }
+
+  return {
+    ...datos,
+    nombre: datos.nombre || datos.nombrePlan,
+    nombrePlan: datos.nombre || datos.nombrePlan,
+    createdBy: auth.currentUser?.uid || 'usuario-anonimo',
+    estudianteId: datos.estudianteId || 'estudiante-general',
+    estado: datos.estado || 'activo',
+    objetivos: asegurarArray(datos.objetivos),
+    actividades: asegurarArray(datos.actividades)
+  };
+}
+
+export async function crearPlan(datos = {}) {
+  const plan = construirPlan(datos);
+  const creado = await crearPlanIntervención(plan);
+  return normalizarPlan(creado);
+}
+
+export async function obtenerObjetivos(tipoDisgrafia = '') {
+  const data = await cargarObjetivos();
+  return asegurarArray(data?.objetivos?.[tipoDisgrafia]);
+}
+
+export async function generarActividades(objetivos = []) {
+  const data = await cargarActividades();
+  const mapa = data?.actividadesPorObjetivo || {};
+
+  const actividades = objetivos.flatMap((objetivo) => {
+    return asegurarArray(mapa[objetivo]).map((actividad, indice) => ({
+      id: `${objetivo}-${indice}-${Date.now()}`,
+      objetivo,
+      actividad: actividad.actividad,
+      duracion: actividad.duracion,
+      frecuencia: actividad.frecuencia,
+      recursos: asegurarArray(actividad.recursos),
+      estado: 'pendiente'
+    }));
+  });
+
+  if (actividades.length) {
+    return actividades;
+  }
+
+  return objetivos.map((objetivo, indice) => ({
+    id: `auto-${indice}-${Date.now()}`,
+    objetivo,
+    actividad: `Actividad guiada para ${objetivo}`,
+    duracion: '20 minutos',
+    frecuencia: '3 veces por semana',
+    recursos: ['Cuaderno pautado', 'Lápiz'],
+    estado: 'pendiente'
+  }));
+}
+
+export async function guardarPlan(plan = {}) {
+  if (plan?.id) {
+    const { id, ...datos } = plan;
+    const actualizado = await actualizarPlanIntervención(id, datos);
+    return normalizarPlan(actualizado);
+  }
+
+  return crearPlan(plan);
+}
+
+export async function obtenerPlanesUsuario() {
+  const usuarioId = auth.currentUser?.uid;
+  const planes = await obtenerPlanesIntervención();
+  if (!usuarioId) {
+    return planes.map(normalizarPlan);
+  }
+
+  return planes
+    .filter((plan) => !plan.createdBy || plan.createdBy === usuarioId)
+    .map(normalizarPlan);
+}
+
+export async function actualizarPlan(id, datos = {}) {
+  const actualizado = await actualizarPlanIntervención(id, datos);
+  return normalizarPlan(actualizado);
+}
+
+export async function eliminarPlan(id) {
+  return eliminarPlanIntervención(id);
+}
+
+// Compatibilidad con implementación existente en js/planes.js
+export const crearPlanServicio = guardarPlan;
+export const obtenerPlanesServicio = obtenerPlanesUsuario;
+export const obtenerPlanPorIdServicio = obtenerPlanIntervención;
+export const actualizarPlanServicio = async (plan) => {
+  if (typeof plan === 'object' && plan !== null) {
+    const id = plan.id;
+    const payload = { ...plan };
+    delete payload.id;
+    return actualizarPlan(id, payload);
+  }
+
+  return actualizarPlan(plan, {});
+};
+export const eliminarPlanServicio = eliminarPlan;
 
 export async function agregarObjetivoServicio(planId, objetivo) {
-    try {
-        console.log("🎯 Agregando objetivo al plan:", planId);
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        if (!plan.objetivos) {
-            plan.objetivos = [];
-        }
-        
-        const objetivoConId = {
-            id: "obj_" + Date.now(),
-            ...objetivo,
-            createdAt: new Date().toISOString()
-        };
-        
-        plan.objetivos.push(objetivoConId);
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Objetivo agregado");
-        
-        return objetivoConId;
-    } catch (error) {
-        console.error("❌ Error agregando objetivo:", error);
-        throw new Error(`Error al agregar objetivo: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const objetivos = asegurarArray(plan?.objetivos);
+  const nuevo = {
+    id: `obj-${Date.now()}`,
+    descripcion: typeof objetivo === 'string' ? objetivo : (objetivo?.descripcion || ''),
+    createdAt: new Date().toISOString()
+  };
+
+  await actualizarPlan(planId, { objetivos: [...objetivos, nuevo] });
+  return nuevo;
 }
 
 export async function eliminarObjetivoServicio(planId, objetivoId) {
-    try {
-        console.log("🗑️ Eliminando objetivo:", objetivoId);
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        plan.objetivos = (plan.objetivos || []).filter(obj => obj.id !== objetivoId);
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Objetivo eliminado");
-    } catch (error) {
-        console.error("❌ Error eliminando objetivo:", error);
-        throw new Error(`Error al eliminar objetivo: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const objetivos = asegurarArray(plan?.objetivos).filter((item) => item.id !== objetivoId);
+  return actualizarPlan(planId, { objetivos });
 }
 
-// ==========================================
-// ACTIVIDADES
-// ==========================================
+export async function agregarActividadServicio(planId, actividad = {}) {
+  const plan = await obtenerPlanIntervención(planId);
+  const actividades = asegurarArray(plan?.actividades);
+  const nueva = {
+    id: `act-${Date.now()}`,
+    actividad: actividad.actividad || actividad.nombre || 'Actividad',
+    duracion: actividad.duracion || `${DURACION_ACTIVIDAD_DEFAULT_MINUTOS} minutos`,
+    frecuencia: actividad.frecuencia || '3 veces por semana',
+    completado: false
+  };
 
-export async function agregarActividadServicio(planId, actividad) {
-    try {
-        console.log("✏️ Agregando actividad al plan:", planId);
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        if (!plan.actividades) {
-            plan.actividades = [];
-        }
-        
-        const actividadConId = {
-            id: "act_" + Date.now(),
-            ...actividad,
-            completado: false,
-            fechasCompletadas: [],
-            createdAt: new Date().toISOString()
-        };
-        
-        plan.actividades.push(actividadConId);
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Actividad agregada");
-        
-        return actividadConId;
-    } catch (error) {
-        console.error("❌ Error agregando actividad:", error);
-        throw new Error(`Error al agregar actividad: ${error.message}`);
-    }
+  await actualizarPlan(planId, { actividades: [...actividades, nueva] });
+  return nueva;
 }
 
-export async function actualizarActividadServicio(planId, actividadId, datosActualizacion) {
-    try {
-        console.log("📝 Actualizando actividad:", actividadId);
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        const indiceActividad = plan.actividades.findIndex(act => act.id === actividadId);
-        
-        if (indiceActividad === -1) {
-            throw new Error("Actividad no encontrada");
-        }
-        
-        plan.actividades[indiceActividad] = {
-            ...plan.actividades[indiceActividad],
-            ...datosActualizacion,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Actividad actualizada");
-        
-        return plan.actividades[indiceActividad];
-    } catch (error) {
-        console.error("❌ Error actualizando actividad:", error);
-        throw new Error(`Error al actualizar actividad: ${error.message}`);
-    }
+export async function actualizarActividadServicio(planId, actividadId, datosActualizacion = {}) {
+  const plan = await obtenerPlanIntervención(planId);
+  const actividades = asegurarArray(plan?.actividades).map((item) => {
+    if (item.id !== actividadId) return item;
+    return { ...item, ...datosActualizacion };
+  });
+
+  await actualizarPlan(planId, { actividades });
+  return actividades.find((item) => item.id === actividadId);
 }
 
 export async function eliminarActividadServicio(planId, actividadId) {
-    try {
-        console.log("🗑️ Eliminando actividad:", actividadId);
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        plan.actividades = (plan.actividades || []).filter(act => act.id !== actividadId);
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Actividad eliminada");
-    } catch (error) {
-        console.error("❌ Error eliminando actividad:", error);
-        throw new Error(`Error al eliminar actividad: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const actividades = asegurarArray(plan?.actividades).filter((item) => item.id !== actividadId);
+  return actualizarPlan(planId, { actividades });
 }
 
 export async function marcarActividadCompletadaServicio(planId, actividadId, completado = true) {
-    try {
-        console.log("✅ Marcando actividad:", actividadId, completado ? "completada" : "incompleta");
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        const actividad = plan.actividades.find(act => act.id === actividadId);
-        
-        if (!actividad) {
-            throw new Error("Actividad no encontrada");
-        }
-        
-        actividad.completado = completado;
-        
-        if (!actividad.fechasCompletadas) {
-            actividad.fechasCompletadas = [];
-        }
-        
-        if (completado) {
-            actividad.fechasCompletadas.push(new Date().toISOString());
-        }
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Estado de actividad actualizado");
-        
-        return actividad;
-    } catch (error) {
-        console.error("❌ Error marcando actividad:", error);
-        throw new Error(`Error al marcar actividad: ${error.message}`);
-    }
+  return actualizarActividadServicio(planId, actividadId, { completado });
 }
 
-// ==========================================
-// SEGUIMIENTO
-// ==========================================
+export async function agregarRegistroSeguimientoServicio(planId, nota = '') {
+  const plan = await obtenerPlanIntervención(planId);
+  const registroSeguimiento = asegurarArray(plan?.registroSeguimiento);
+  const nuevo = {
+    id: `reg-${Date.now()}`,
+    fecha: new Date().toISOString(),
+    nota,
+    usuario: auth.currentUser?.email || 'Docente'
+  };
 
-export async function agregarRegistroSeguimientoServicio(planId, nota) {
-    try {
-        console.log("📝 Agregando registro de seguimiento");
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        if (!plan.registroSeguimiento) {
-            plan.registroSeguimiento = [];
-        }
-        
-        const registro = {
-            id: "reg_" + Date.now(),
-            fecha: new Date().toISOString(),
-            nota: nota,
-            usuario: "Terapista" // TODO: Obtener usuario actual
-        };
-        
-        plan.registroSeguimiento.push(registro);
-        
-        await actualizarPlanServicio(plan);
-        
-        console.log("✅ Registro agregado");
-        
-        return registro;
-    } catch (error) {
-        console.error("❌ Error agregando registro:", error);
-        throw new Error(`Error al agregar registro: ${error.message}`);
-    }
+  await actualizarPlan(planId, { registroSeguimiento: [...registroSeguimiento, nuevo] });
+  return nuevo;
 }
 
 export async function obtenerRegistroSeguimientoServicio(planId) {
-    try {
-        console.log("📊 Obteniendo registro de seguimiento");
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        return plan.registroSeguimiento || [];
-    } catch (error) {
-        console.error("❌ Error obteniendo registro:", error);
-        throw new Error(`Error al obtener registro: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  return asegurarArray(plan?.registroSeguimiento);
 }
 
-// ==========================================
-// CÁLCULOS Y ESTADÍSTICAS
-// ==========================================
-
 export async function calcularProgresoServicio(planId) {
-    try {
-        console.log("📊 Calculando progreso del plan");
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        const actividades = plan.actividades || [];
-        const totalActividades = actividades.length;
-        
-        if (totalActividades === 0) {
-            return {
-                porcentaje: 0,
-                actividadesCompletadas: 0,
-                totalActividades: 0,
-                actividadesPendientes: 0
-            };
-        }
-        
-        const actividadesCompletadas = actividades.filter(act => act.completado).length;
-        const actividadesPendientes = totalActividades - actividadesCompletadas;
-        const porcentaje = Math.round((actividadesCompletadas / totalActividades) * 100);
-        
-        console.log(`✅ Progreso: ${porcentaje}% (${actividadesCompletadas}/${totalActividades})`);
-        
-        return {
-            porcentaje,
-            actividadesCompletadas,
-            totalActividades,
-            actividadesPendientes
-        };
-    } catch (error) {
-        console.error("❌ Error calculando progreso:", error);
-        throw new Error(`Error al calcular progreso: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const actividades = asegurarArray(plan?.actividades);
+  const completadas = actividades.filter((a) => a.completado || a.estado === 'completada').length;
+  const total = actividades.length;
+  const porcentaje = total ? Math.round((completadas / total) * 100) : 0;
+
+  return {
+    porcentaje,
+    actividadesCompletadas: completadas,
+    totalActividades: total,
+    actividadesPendientes: Math.max(total - completadas, 0)
+  };
 }
 
 export async function obtenerEstadísticasServicio(planId) {
-    try {
-        console.log("📊 Obteniendo estadísticas del plan");
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        const actividades = plan.actividades || [];
-        const objetivos = plan.objetivos || [];
-        const registros = plan.registroSeguimiento || [];
-        
-        const actividadesCompletadas = actividades.filter(act => act.completado).length;
-        const duracionTotal = actividades.reduce((sum, act) => sum + (act.duracion || 0), 0);
-        const frecuencias = {};
-        
-        actividades.forEach(act => {
-            frecuencias[act.frecuencia] = (frecuencias[act.frecuencia] || 0) + 1;
-        });
-        
-        const estadisticas = {
-            totalObjetivos: objetivos.length,
-            totalActividades: actividades.length,
-            actividadesCompletadas,
-            actividadesPendientes: actividades.length - actividadesCompletadas,
-            porcentajeCompleción: actividades.length > 0 
-                ? Math.round((actividadesCompletadas / actividades.length) * 100)
-                : 0,
-            duracionTotal,
-            duracionPromedio: actividades.length > 0 
-                ? Math.round(duracionTotal / actividades.length)
-                : 0,
-            frecuencias,
-            totalRegistros: registros.length,
-            diasActivo: plan.fechaInicio && plan.fechaTermino
-                ? Math.ceil((new Date(plan.fechaTermino) - new Date(plan.fechaInicio)) / (1000 * 60 * 60 * 24))
-                : 0
-        };
-        
-        console.log("✅ Estadísticas calculadas", estadisticas);
-        
-        return estadisticas;
-    } catch (error) {
-        console.error("❌ Error obteniendo estadísticas:", error);
-        throw new Error(`Error al obtener estadísticas: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const actividades = asegurarArray(plan?.actividades);
+  const objetivos = asegurarArray(plan?.objetivos);
+  const registro = asegurarArray(plan?.registroSeguimiento);
+  const completadas = actividades.filter((a) => a.completado || a.estado === 'completada').length;
+
+  return {
+    totalObjetivos: objetivos.length,
+    totalActividades: actividades.length,
+    actividadesCompletadas: completadas,
+    actividadesPendientes: actividades.length - completadas,
+    porcentajeCompleción: actividades.length ? Math.round((completadas / actividades.length) * 100) : 0,
+    duracionTotal: actividades.reduce((acc, item) => acc + extraerDuracionMinutos(item.duracion), 0),
+    duracionPromedio: actividades.length
+      ? Math.round(actividades.reduce((acc, item) => acc + extraerDuracionMinutos(item.duracion), 0) / actividades.length)
+      : 0,
+    frecuencias: actividades.reduce((acc, item) => {
+      const frecuencia = item.frecuencia || 'Sin definir';
+      acc[frecuencia] = (acc[frecuencia] || 0) + 1;
+      return acc;
+    }, {}),
+    totalRegistros: registro.length,
+    diasActivo: 0
+  };
 }
 
-// ==========================================
-// BÚSQUEDA Y FILTRADO
-// ==========================================
-
-export async function buscarPlanesServicio(criterio) {
-    try {
-        console.log("🔍 Buscando planes:", criterio);
-        
-        const planes = await obtenerPlanesServicio();
-        
-        const resultados = planes.filter(plan => 
-            plan.nombrePlan.toLowerCase().includes(criterio.toLowerCase()) ||
-            plan.nombreEstudiante.toLowerCase().includes(criterio.toLowerCase()) ||
-            plan.descripcion.toLowerCase().includes(criterio.toLowerCase())
-        );
-        
-        console.log(`✅ Se encontraron ${resultados.length} planes`);
-        
-        return resultados;
-    } catch (error) {
-        console.error("❌ Error buscando planes:", error);
-        throw new Error(`Error al buscar planes: ${error.message}`);
-    }
+export async function buscarPlanesServicio(criterio = '') {
+  const planes = await obtenerPlanesUsuario();
+  const query = criterio.toLowerCase();
+  return planes.filter((plan) => {
+    const bolsa = `${plan.nombre || ''} ${plan.nombreEstudiante || ''} ${plan.descripcion || ''}`.toLowerCase();
+    return bolsa.includes(query);
+  });
 }
-
-export async function obtenerPlanesPorEstudiante(nombreEstudiante) {
-    try {
-        console.log("📋 Obteniendo planes del estudiante:", nombreEstudiante);
-        
-        const planes = await obtenerPlanesServicio();
-        
-        const planesPorEstudiante = planes.filter(plan =>
-            plan.nombreEstudiante.toLowerCase() === nombreEstudiante.toLowerCase()
-        );
-        
-        console.log(`✅ Se encontraron ${planesPorEstudiante.length} planes`);
-        
-        return planesPorEstudiante;
-    } catch (error) {
-        console.error("❌ Error obteniendo planes del estudiante:", error);
-        throw new Error(`Error al obtener planes: ${error.message}`);
-    }
-}
-
-// ==========================================
-// EXPORTAR PLAN
-// ==========================================
 
 export async function exportarPlanJSONServicio(planId) {
-    try {
-        console.log("📤 Exportando plan como JSON");
-        
-        const plan = await obtenerPlanPorIdServicio(planId);
-        
-        const jsonString = JSON.stringify(plan, null, 2);
-        const blob = new Blob([jsonString], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `plan_${plan.nombrePlan.replace(/\s+/g, "_")}_${Date.now()}.json`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
-        
-        console.log("✅ Plan exportado");
-    } catch (error) {
-        console.error("❌ Error exportando plan:", error);
-        throw new Error(`Error al exportar plan: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const blob = new Blob([JSON.stringify(plan, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `plan-${planId}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 export async function importarPlanJSONServicio(jsonData) {
-    try {
-        console.log("📥 Importando plan desde JSON");
-        
-        const planData = typeof jsonData === "string" 
-            ? JSON.parse(jsonData)
-            : jsonData;
-        
-        // Validar datos mínimos
-        if (!planData.nombrePlan || !planData.nombreEstudiante) {
-            throw new Error("El plan debe tener nombrePlan y nombreEstudiante");
-        }
-        
-        // Crear nuevo plan
-        const nuevoPlan = await crearPlanServicio(planData);
-        
-        console.log("✅ Plan importado con ID:", nuevoPlan.id);
-        
-        return nuevoPlan;
-    } catch (error) {
-        console.error("❌ Error importando plan:", error);
-        throw new Error(`Error al importar plan: ${error.message}`);
-    }
+  const datos = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+  return guardarPlan(datos);
 }
 
-// ==========================================
-// DUPLICAR PLAN
-// ==========================================
-
 export async function duplicarPlanServicio(planId, nuevoNombre = null) {
-    try {
-        console.log("🔄 Duplicando plan:", planId);
-        
-        const planOriginal = await obtenerPlanPorIdServicio(planId);
-        
-        const planDuplicado = {
-            ...planOriginal,
-            nombrePlan: nuevoNombre || `${planOriginal.nombrePlan} (Copia)`,
-            estado: "activo",
-            fechaInicio: new Date().toISOString().split('T')[0],
-            fechaTermino: "",
-            registroSeguimiento: [],
-            actividades: (planOriginal.actividades || []).map(act => ({
-                ...act,
-                id: "act_" + Date.now(),
-                completado: false,
-                fechasCompletadas: []
-            }))
-        };
-        
-        delete planDuplicado.id;
-        delete planDuplicado.createdAt;
-        delete planDuplicado.updatedAt;
-        
-        const nuevoPlan = await crearPlanServicio(planDuplicado);
-        
-        console.log("✅ Plan duplicado con ID:", nuevoPlan.id);
-        
-        return nuevoPlan;
-    } catch (error) {
-        console.error("❌ Error duplicando plan:", error);
-        throw new Error(`Error al duplicar plan: ${error.message}`);
-    }
+  const plan = await obtenerPlanIntervención(planId);
+  const copia = {
+    ...plan,
+    nombre: nuevoNombre || `${plan.nombre || plan.nombrePlan || 'Plan'} (Copia)`,
+    nombrePlan: nuevoNombre || `${plan.nombre || plan.nombrePlan || 'Plan'} (Copia)`
+  };
+  delete copia.id;
+  return guardarPlan(copia);
 }
