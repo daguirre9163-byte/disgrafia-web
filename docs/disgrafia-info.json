@@ -1,0 +1,75 @@
+{
+  "definicion": "La disgrafía es un trastorno específico del aprendizaje que afecta la habilidad para escribir de forma legible, fluida y organizada. Puede impactar el trazo, la ortografía y la planificación del texto, incluso cuando la persona tiene inteligencia y oportunidades educativas adecuadas.",
+  "tipos": [
+    {
+      "tipo": "Disgrafía motriz",
+      "descripcion": "Se relaciona con dificultades de motricidad fina, tono muscular y coordinación óculo-manual necesarias para el acto de escribir.",
+      "sintomas": [
+        "Letra irregular o temblorosa",
+        "Presión inadecuada del lápiz",
+        "Dolor o fatiga al escribir",
+        "Postura inestable durante la escritura"
+      ]
+    },
+    {
+      "tipo": "Disgrafía disléxica",
+      "descripcion": "Predominan las dificultades en codificación escrita y ortografía, con errores frecuentes al construir palabras.",
+      "sintomas": [
+        "Errores ortográficos persistentes",
+        "Omisión o sustitución de letras",
+        "Inversiones de grafemas",
+        "Dificultad para segmentar sílabas"
+      ]
+    },
+    {
+      "tipo": "Disgrafía espacial",
+      "descripcion": "Compromete la organización espacial del texto en la hoja: alineación, márgenes y distribución.",
+      "sintomas": [
+        "Márgenes irregulares",
+        "Espaciado inconstante entre letras y palabras",
+        "Alineación deficiente en renglones",
+        "Desorganización visual del texto"
+      ]
+    }
+  ],
+  "sintomas_generales": [
+    "Letra ilegible o inconsistente",
+    "Dificultad para seguir líneas y proporción",
+    "Presión excesiva o muy ligera",
+    "Velocidad de escritura lenta",
+    "Errores ortográficos recurrentes",
+    "Evita tareas largas de escritura"
+  ],
+  "estrategias_intervencion": [
+    {
+      "estrategia": "Ejercicios de motricidad fina",
+      "descripcion": "Fortalecer mano y dedos para mejorar control de pinza y resistencia al trazo.",
+      "actividades": [
+        "Rasgar y recortar papel",
+        "Enroscar tapas y pinzas",
+        "Modelado con plastilina",
+        "Uso de pinzas para clasificar objetos"
+      ]
+    },
+    {
+      "estrategia": "Coordinación ojo-mano",
+      "descripcion": "Entrenar sincronización visual y motora para aumentar precisión del trazo.",
+      "actividades": [
+        "Trazado de líneas guiadas",
+        "Seguimiento de puntos",
+        "Copiado de patrones",
+        "Laberintos progresivos"
+      ]
+    },
+    {
+      "estrategia": "Enseñanza multisensorial",
+      "descripcion": "Integrar canales visual, táctil y auditivo para consolidar aprendizaje de grafemas y palabras.",
+      "actividades": [
+        "Escritura en arena o espuma",
+        "Letras táctiles",
+        "Dictado con apoyo visual",
+        "Asociación fonema-grafema"
+      ]
+    }
+  ]
+}

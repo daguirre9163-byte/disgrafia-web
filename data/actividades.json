@@ -1,0 +1,54 @@
+{
+  "actividadesPorObjetivo": {
+    "Mejorar presión de escritura": [
+      {
+        "actividad": "Ejercicios de presión con lápiz",
+        "duracion": "20 minutos",
+        "frecuencia": "3 veces por semana",
+        "recursos": ["Lápiz triangular", "Hojas con escala de presión"]
+      },
+      {
+        "actividad": "Escritura en diferentes superficies",
+        "duracion": "15 minutos",
+        "frecuencia": "3 veces por semana",
+        "recursos": ["Pizarra", "Hojas texturizadas", "Marcadores"]
+      },
+      {
+        "actividad": "Fortalecimiento de mano",
+        "duracion": "10 minutos",
+        "frecuencia": "Diario",
+        "recursos": ["Pelota antiestrés", "Pinzas", "Plastilina"]
+      },
+      {
+        "actividad": "Control de trazo",
+        "duracion": "20 minutos",
+        "frecuencia": "4 veces por semana",
+        "recursos": ["Plantillas de trazos", "Cuaderno pautado"]
+      }
+    ],
+    "Aumentar control del trazo": [
+      {
+        "actividad": "Trazado de líneas y curvas guiadas",
+        "duracion": "20 minutos",
+        "frecuencia": "4 veces por semana",
+        "recursos": ["Fichas de grafomotricidad"]
+      }
+    ],
+    "Reducir errores ortográficos": [
+      {
+        "actividad": "Dictado estructurado con retroalimentación inmediata",
+        "duracion": "20 minutos",
+        "frecuencia": "3 veces por semana",
+        "recursos": ["Lista de palabras frecuentes"]
+      }
+    ],
+    "Mejorar alineación en renglón": [
+      {
+        "actividad": "Copia en cuaderno de pauta ancha",
+        "duracion": "15 minutos",
+        "frecuencia": "Diario",
+        "recursos": ["Cuaderno pautado", "Lápiz bicolor"]
+      }
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import {
   obtenerEvaluaciones,
   obtenerActividades
 } from "../../firebase/firestore.js";
+import { obtenerEstadisticasDashboard } from "../dashboard-module.js";
 
 function destruirGrafico(nombre) {
   if (window[nombre]) {
@@ -136,17 +137,31 @@ function actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones }) {
   document.getElementById("kpiEvaluadosMes").textContent = String(new Set(evalMes.map((item) => item.estudianteId)).size);
 }
 
+function actualizarKPIsExtendidos(estadisticas = {}) {
+  const planes = document.getElementById("kpiPlanesCreados");
+  const activos = document.getElementById("kpiIntervencionesActivas");
+  const top = document.getElementById("kpiRecursoTop");
+  const progreso = document.getElementById("kpiProgresoEstudiantes");
+
+  if (planes) planes.textContent = String(estadisticas.planesCreados ?? 0);
+  if (activos) activos.textContent = String(estadisticas.estudiantesConIntervencionActiva ?? 0);
+  if (top) top.textContent = estadisticas.recursoMasDescargado || "-";
+  if (progreso) progreso.textContent = estadisticas.progresoEstudiantes || "0%";
+}
+
 async function initDashboard() {
   try {
-    const [estudiantes, cursos, paralelos, evaluaciones, actividades] = await Promise.all([
+    const [estudiantes, cursos, paralelos, evaluaciones, actividades, estadisticas] = await Promise.all([
       obtenerEstudiantes(),
       obtenerCursos(),
       obtenerParalelos(),
       obtenerEvaluaciones(),
-      obtenerActividades()
+      obtenerActividades(),
+      obtenerEstadisticasDashboard()
     ]);
 
     actualizarKPIs({ estudiantes, cursos, paralelos, evaluaciones, actividades });
+    actualizarKPIsExtendidos(estadisticas);
     renderActividadReciente(actividades);
     renderParalelos(paralelos, estudiantes, cursos);
     graficarCurso(estudiantes, cursos);

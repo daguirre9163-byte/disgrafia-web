@@ -1,0 +1,22 @@
+{
+  "objetivos": {
+    "Disgrafía motriz": [
+      "Mejorar presión de escritura",
+      "Aumentar control del trazo",
+      "Mejorar postura y prensión",
+      "Incrementar velocidad con legibilidad"
+    ],
+    "Disgrafía dislexica": [
+      "Reducir errores ortográficos",
+      "Fortalecer conciencia fonológica",
+      "Mejorar segmentación silábica",
+      "Consolidar reglas ortográficas básicas"
+    ],
+    "Disgrafía espacial": [
+      "Mejorar alineación en renglón",
+      "Regular espacio entre letras y palabras",
+      "Organizar márgenes y disposición del texto",
+      "Mantener tamaño homogéneo de grafemas"
+    ]
+  }
+}
